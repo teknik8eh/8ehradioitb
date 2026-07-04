@@ -18,8 +18,13 @@ export async function POST(req) {
   if (!session || !isAdmin(session.user.role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
   const { baseUrls, defaultUrl, fallbackUrl, onAir } = await req.json();
+
   let config = await prisma.streamConfig.findFirst();
+  const wasOffAir = !config?.onAir;
+  const nowGoingLive = onAir === true && wasOffAir;
+
   if (config) {
     config = await prisma.streamConfig.update({
       where: { id: config.id },
@@ -30,5 +35,13 @@ export async function POST(req) {
       data: { baseUrls, defaultUrl, fallbackUrl, onAir },
     });
   }
+
+  // Reset kuota request semua GuestSession saat siaran baru dimulai
+  if (nowGoingLive) {
+    await prisma.guestSession.updateMany({
+      data: { requestCount: 0 },
+    });
+  }
+
   return NextResponse.json(config);
-} 
+}
