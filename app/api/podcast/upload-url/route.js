@@ -21,7 +21,7 @@ const s3 = new S3Client({
 });
 
 function isAdmin(roleString) {
-  return hasAnyRole(roleString, ["DEVELOPER", "MUSIC"]);
+  return hasAnyRole(roleString, ["DEVELOPER", "MUSIC", "TECHNIC"]);
 }
 
 export async function POST(req) {

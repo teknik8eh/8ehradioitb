@@ -16,7 +16,7 @@ function PodcastDashboard() {
   const [editForm, setEditForm] = useState({});
 
   const isAdmin =
-    session && hasAnyRole(session.user.role, ["DEVELOPER", "MUSIC"]);
+    session && hasAnyRole(session.user.role, ["DEVELOPER", "MUSIC", "TECHNIC"]);
 
   useEffect(() => {
     if (isAdmin) {
