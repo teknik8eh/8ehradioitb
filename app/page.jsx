@@ -2,6 +2,7 @@ import Navbar from "@/app/components/Navbar";
 import FooterSection from "@/app/components/FooterSection";
 import dynamic from "next/dynamic";
 import HeroSection from "@/app/components/home/HeroSection";
+import OprecBanner from "@/app/components/home/OprecBanner";
 import PodcastList from "@/app/components/home/PodcastList";
 import NewsList from "@/app/components/home/NewsList";
 import TuneTracker from "@/app/components/home/TuneTracker";
@@ -131,6 +132,7 @@ export default async function Home() {
     <main className="flex flex-col min-h-screen bg-white font-sans">
       <Navbar />
       <HeroSection />
+      <OprecBanner />
       <PodcastList podcasts={serializedPodcasts} />
       <NewsList newsItems={serializedNews} />
       {/* <ProgramsSection /> */}
