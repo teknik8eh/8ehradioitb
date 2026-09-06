@@ -149,7 +149,7 @@ export default function DashboardHome() {
             Kami telah menyiapkan panduan dokumentasi website 8EH Radio ITB untuk membantu Anda menggunakan dashboard ini dengan lebih mudah.
           </p>
           <a
-            href="https://docs.google.com/document/d/1kScboeFQNPDu9YNwrt6mUYPlhVXf_yHmCDyn0AJtvdE/edit?usp=sharing"
+            href="https://docs.google.com/document/d/15qoKMI8CVEu7cTKpP473kIOSQbxjcuXXc0sOMz_EagQ/edit?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
             className="font-body font-semibold text-blue-600 hover:underline mt-2 inline-block"
