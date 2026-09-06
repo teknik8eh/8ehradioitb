@@ -1,12 +1,13 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRadioStream } from "@/app/hooks/useRadioStream";
+import { useGlobalAudio } from "@/app/hooks/useGlobalAudio";
 
 export default function NavbarAudio({ onAir, variant }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
   const [localLoading, setLocalLoading] = useState(false); // For mobile sync
-  const audioRef = useRef(null);
+  const audioRef = useGlobalAudio();
   const reconnectTimerRef = useRef(null);
   const isPlayingRef = useRef(false);
 
@@ -110,6 +111,17 @@ export default function NavbarAudio({ onAir, variant }) {
   }, [isPlaying]);
 
   useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const playing = !audio.paused && !audio.ended && !!audio.src;
+    setIsPlaying(playing);
+    isPlayingRef.current = playing;
+    if (playing) emitAudioStateChanged(true);
+    audio.volume = volume;
+  }, [audioRef, emitAudioStateChanged, volume]);
+
+  useEffect(() => {
     const handlePlayReq = () => {
       // Only host (desktop) acts on requests
       if (variant === "desktop" && !isPlaying) playStream();
@@ -146,7 +158,7 @@ export default function NavbarAudio({ onAir, variant }) {
   }, [isPlaying, playStream, pauseStream, variant]);
 
   useEffect(() => {
-  // Hanya desktop yang punya audio element
+  // The singleton audio instance is shared across page navigations.
   if (variant !== "desktop") return;
   const audio = audioRef.current;
   if (!audio) return;
@@ -344,14 +356,6 @@ export default function NavbarAudio({ onAir, variant }) {
           </>
         )}
       </button>
-
-      {/* Singleton Audio Element (Desktop only) */}
-      <audio
-        ref={audioRef}
-        src={streamUrl || undefined}
-        preload="none"
-        playsInline
-      />
     </>
   );
 }

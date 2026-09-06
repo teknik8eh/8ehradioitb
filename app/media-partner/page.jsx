@@ -357,7 +357,7 @@ const OfferedService = () => {
   );
 };
 
-export function RateCard() {
+function RateCard() {
   const [activeTerm, setActiveTerm] = useState("shortTerm");
   const currentPlans = rateCardData[activeTerm];
 

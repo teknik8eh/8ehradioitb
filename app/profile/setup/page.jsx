@@ -532,7 +532,6 @@ export default function ProfileSetupPage() {
               {claimHint ? (
                 <form onSubmit={handleClaimProfile} className="grid gap-3 sm:grid-cols-[1fr_auto]">
                   <input
-                    type="text"
                     type="password"
                     value={claimLast6}
                     onChange={(event) =>

@@ -5,12 +5,14 @@ import { FiPlus, FiTrash2, FiSave } from "react-icons/fi";
 import { hasAnyRole } from '@/lib/roleUtils';
 
 export default function StreamConfigPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [config, setConfig] = useState({
     baseUrls: [],
     defaultUrl: "",
     fallbackUrl: "",
     onAir: false,
+    liveChatEnabled: true,
+    songRequestEnabled: true,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -29,6 +31,8 @@ export default function StreamConfigPage() {
           defaultUrl: data?.defaultUrl || "",
           fallbackUrl: data?.fallbackUrl || "",
           onAir: typeof data?.onAir === "boolean" ? data.onAir : true,
+          liveChatEnabled: data?.liveChatEnabled !== false,
+          songRequestEnabled: data?.songRequestEnabled !== false,
         });
       })
       .catch(() => {
@@ -173,6 +177,40 @@ export default function StreamConfigPage() {
                 ))}
               </select>
             </div>
+        </div>
+
+        {/* Session Features */}
+        <div>
+          <label className="block font-semibold font-body text-gray-700 mb-2">Fitur Sesi Siaran</label>
+          <div className="space-y-3">
+            {[
+              ["liveChatEnabled", "Live Chat"],
+              ["songRequestEnabled", "Song Request"],
+            ].map(([name, label]) => (
+              <div key={name} className="flex items-center justify-between gap-4 p-4 bg-gray-50 border border-gray-200 rounded-md">
+                <span className="font-body text-gray-700">{label}</span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={!!config[name]}
+                  onClick={() => handleChange({ target: { name, type: "checkbox", checked: !config[name] } })}
+                  className={`relative inline-flex h-7 w-14 items-center cursor-pointer rounded-full transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 border ${
+                    config[name]
+                      ? "bg-green-500 border-green-600 focus:ring-green-500"
+                      : "bg-gray-300 border-gray-400 focus:ring-gray-400"
+                  }`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-300 ease-in-out ${
+                      config[name] ? "translate-x-7" : "translate-x-1"
+                    }`}
+                  />
+                  <span className="sr-only">{config[name] ? "Matikan" : "Nyalakan"} {label}</span>
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* On Air Status */}

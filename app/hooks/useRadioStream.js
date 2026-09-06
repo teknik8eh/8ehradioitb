@@ -3,6 +3,40 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import useSWR from "swr";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
+const DEFAULT_STREAM_URL =
+  "http://stream.8ehradioitb.com/listen/8eh_radio_itb/radio.mp3";
+
+function normalizeStreamUrl(url) {
+  const cleaned = typeof url === "string" ? url.trim() : "";
+  if (!cleaned) return DEFAULT_STREAM_URL;
+  if (/^https?:\/\//i.test(cleaned)) return cleaned;
+  return `https://${cleaned.replace(/^\/+/, "")}`;
+}
+
+function addNoCache(url, code) {
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}nocache=${code}`;
+}
+
+function toBrowserPlayableUrl(url) {
+  if (
+    typeof window !== "undefined" &&
+    window.location.protocol === "https:" &&
+    url.startsWith("http://")
+  ) {
+    return `/api/stream?url=${encodeURIComponent(url)}`;
+  }
+  return url;
+}
+
+function isDirectStreamUrl(url) {
+  return (
+    url.includes("?") ||
+    url.includes("/listen/") ||
+    url.endsWith(".mp3") ||
+    /\/stream\/[^/?#]+$/i.test(url)
+  );
+}
 
 export const useRadioStream = () => {
   const [streamUrl, setStreamUrl] = useState("");
@@ -16,10 +50,8 @@ export const useRadioStream = () => {
 
   const config = useMemo(
     () => ({
-      defaultUrl:
-        configData?.defaultUrl || "https://s3.free-shoutcast.com/stream/18032",
-      fallbackUrl:
-        configData?.fallbackUrl || "https://s3.free-shoutcast.com/stream/18032",
+      defaultUrl: normalizeStreamUrl(configData?.defaultUrl),
+      fallbackUrl: normalizeStreamUrl(configData?.fallbackUrl),
     }),
     [configData],
   );
@@ -40,13 +72,13 @@ export const useRadioStream = () => {
   const randomCode = Math.random().toString(36).substring(2, 8);
   const baseUrl = STREAM_CONFIG.baseUrl;
   
-  // Kalau AzuraCast (ada /listen/ di URL), cukup tambah query param nocache
-  if (baseUrl.includes("/listen/")) {
-    return `${baseUrl}?nocache=${randomCode}`;
+  // Kalau direct stream URL, cukup tambah query param nocache.
+  if (isDirectStreamUrl(baseUrl)) {
+    return toBrowserPlayableUrl(addNoCache(baseUrl, randomCode));
   }
   
   // Kalau Shoutcast/Icecast, pakai format lama
-  return `${baseUrl}/;?type=http&nocache=${randomCode}`;
+  return toBrowserPlayableUrl(`${baseUrl}/;?type=http&nocache=${randomCode}`);
 }, [STREAM_CONFIG.baseUrl]);
 
 
@@ -83,11 +115,15 @@ export const useRadioStream = () => {
     const randomCode = Math.random().toString(36).substring(2, 8);
     const fallbackUrl = STREAM_CONFIG.fallbackUrl;
     
-    // Sama seperti generateStreamUrl, deteksi AzuraCast atau Shoutcast
-    if (fallbackUrl.includes("/listen/")) {
-      setStreamUrl(`${fallbackUrl}?nocache=${randomCode}`);
+    // Sama seperti generateStreamUrl, deteksi direct stream URL.
+    if (isDirectStreamUrl(fallbackUrl)) {
+      setStreamUrl(toBrowserPlayableUrl(addNoCache(fallbackUrl, randomCode)));
     } else {
-      setStreamUrl(`${fallbackUrl}/;?type=http&nocache=${randomCode}`);
+      setStreamUrl(
+        toBrowserPlayableUrl(
+          `${fallbackUrl}/;?type=http&nocache=${randomCode}`,
+        ),
+      );
     }
     return;
   }

@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 export default function NavbarMobile({
   isOpen,
@@ -12,24 +13,24 @@ export default function NavbarMobile({
   return (
     <div className="md:hidden bg-white border-t border-gray-200">
       <nav className="flex flex-col px-4 pt-2 pb-4">
-        <a
+        <Link
           href="/"
           className="px-3 py-3 text-gray-900 hover:text-[#D83232] hover:bg-gray-100 rounded-md font-medium text-base font-body transition-colors"
         >
           Home
-        </a>
-        <a
+        </Link>
+        <Link
           href="/podcast"
           className="px-3 py-3 text-gray-900 hover:text-[#D83232] hover:bg-gray-100 rounded-md font-medium text-base font-body transition-colors"
         >
           Podcast
-        </a>
-        <a
+        </Link>
+        <Link
           href="/blog"
           className="px-3 py-3 text-gray-900 hover:text-[#D83232] hover:bg-gray-100 rounded-md font-medium text-base font-body transition-colors"
         >
           Blog
-        </a>
+        </Link>
 
         {/* Discover Dropdown for Mobile */}
         <div>

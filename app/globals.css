@@ -18,6 +18,14 @@
   --font-accent: var(--font-instrument-serif);
 }
 
+.font-plus-jakarta-sans {
+  font-family: var(--font-plus-jakarta-sans), system-ui, sans-serif;
+}
+
+.\!font-plus-jakarta-sans {
+  font-family: var(--font-plus-jakarta-sans), system-ui, sans-serif !important;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #ffffff;
@@ -52,6 +60,21 @@ body {
 
   .animate-marquee-infinite {
     animation: marquee-infinite 20s linear infinite;
+  }
+
+  @keyframes player-title-marquee {
+    0%,
+    15% {
+      transform: translateX(0);
+    }
+    85%,
+    100% {
+      transform: translateX(calc(-100% + var(--player-title-width, 15rem)));
+    }
+  }
+
+  .animate-player-title-marquee {
+    animation: player-title-marquee 14s linear infinite;
   }
 
   /* Smooth spinner */

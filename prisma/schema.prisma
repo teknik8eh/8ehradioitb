@@ -309,6 +309,8 @@ model StreamConfig {
   defaultUrl  String
   fallbackUrl String
   onAir       Boolean  @default(true)
+  liveChatEnabled Boolean @default(true)
+  songRequestEnabled Boolean @default(true)
   updatedAt   DateTime @updatedAt
 }
 
@@ -332,6 +334,80 @@ model TuneTrackerMeta {
   updatedAt   DateTime @updatedAt
 }
 
+model NowPlayingPlaylist {
+  id        String                   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  isActive  Boolean                  @default(true)
+  createdAt DateTime                 @default(now())
+  updatedAt DateTime                 @updatedAt
+  items     NowPlayingPlaylistItem[]
+}
+
+model NowPlayingPlaylistItem {
+  id         String             @id @default(auto()) @map("_id") @db.ObjectId
+  playlistId String             @db.ObjectId
+  playlist   NowPlayingPlaylist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  title      String
+  artist     String
+  coverImage String?
+  order      Int
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+}
+
+model NowPlayingState {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  key        String    @unique @default("main")
+  source     String    @default("manual-playlist")
+  playlistId String?   @db.ObjectId
+  itemId     String?   @db.ObjectId
+  title      String?
+  artist     String?
+  coverImage String?
+  isActive   Boolean   @default(false)
+  startedAt  DateTime?
+  updatedBy  String?
+  updatedAt  DateTime  @updatedAt
+}
+
+model AzuraCastListenerSnapshot {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  stationId String
+  current   Int?
+  unique    Int?
+  total     Int?
+  source    String?
+  createdAt DateTime @default(now())
+
+  @@index([stationId, createdAt])
+}
+
+model BroadcastServerState {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  key                String    @unique @default("main")
+  status             String    @default("idle")
+  phase              String    @default("idle")
+  latestSnapshotId   String?
+  previousSnapshotId String?
+  pendingSnapshotId  String?
+  activeServerId     String?
+  activeServerIp     String?
+  serverName         String?
+  lastAction         String?
+  lastError          String?
+  startedBy          String?
+  endedBy            String?
+  startedAt          DateTime?
+  endedAt            DateTime?
+  autoEndAt          DateTime?
+  autoEndStartedAt   DateTime?
+  lastWatchdogAt     DateTime?
+  lastWatchdogAction String?
+  sourcePasswordRotatedAt DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
 model ProgramVideo {
   id           String   @id @default(cuid()) @map("_id")
   title        String
@@ -340,4 +416,95 @@ model ProgramVideo {
   thumbnailKey String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+
+// ── Broadcast (satu sesi siaran) ──────────────────────
+// Direferensikan oleh GuestSession/ChatRoom/ChatMessage/SongRequest
+// via field `broadcastId` (string ObjectId). Aktif saat StreamConfig.onAir=true.
+model Broadcast {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  isActive  Boolean   @default(true)
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ── Guest Session ─────────────────────────────────────
+model GuestSession {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId          String    @unique
+  guestName          String
+  ipAddress          String?
+  isMuted            Boolean   @default(false)
+  mutedById          String?   @db.ObjectId // admin yang melakukan mute (audit trail)
+  mutedAt            DateTime? // kapan mute terjadi (audit trail)
+  requestCount       Int       @default(0)
+  requestWindowStart DateTime? // mulai window rate-limit 60 detik (lib/rate-limit.ts)
+  broadcastId        String?   @db.ObjectId
+  expiresAt          DateTime
+  createdAt          DateTime  @default(now())
+
+  chatMessages ChatMessage[]
+  songRequests SongRequest[]
+
+  @@index([broadcastId])
+}
+
+// ── Live Chat ─────────────────────────────────────────
+model ChatRoom {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  broadcastId String?  @db.ObjectId     // terikat ke sesi siaran
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  closedAt    DateTime?
+
+  messages    ChatMessage[]
+}
+
+model ChatMessage {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  roomId        String       @db.ObjectId
+  room          ChatRoom     @relation(fields: [roomId], references: [id])
+  sessionId     String       @db.ObjectId
+  guestSession  GuestSession @relation(fields: [sessionId], references: [id])
+  guestName     String       // denormalized untuk performa
+  content       String
+  isDeleted     Boolean      @default(false)
+  deletedById   String?      @db.ObjectId  // admin yang hapus
+  deletedAt     DateTime?
+  createdAt     DateTime     @default(now())
+
+  @@index([roomId, createdAt])
+}
+
+// ── Song Request ──────────────────────────────────────
+enum SongRequestStatus {
+  PENDING
+  QUEUED
+  NOW_PLAYING
+  DONE
+  REJECTED
+}
+
+model SongRequest {
+  id            String            @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId     String            @db.ObjectId
+  guestSession  GuestSession      @relation(fields: [sessionId], references: [id])
+  guestName     String            // denormalized
+  songTitle     String
+  songArtist    String
+  songCoverUrl  String?
+  itunesTrackId String?
+  message       String?           // pesan opsional dari pendengar
+  status        SongRequestStatus @default(PENDING)
+  rejectedReason String?
+  broadcastId   String?  @db.ObjectId
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([broadcastId, status])
+  @@index([sessionId])
+  @@index([status, createdAt])
 }

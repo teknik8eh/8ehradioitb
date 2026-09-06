@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 export default function NavbarDesktop({
   openDropdown,
@@ -8,24 +9,24 @@ export default function NavbarDesktop({
 }) {
   return (
     <nav className="hidden md:flex items-center space-x-8">
-      <a
+      <Link
         href="/"
         className="text-gray-900 hover:text-[#D83232] font-body font-normal text-base transition-colors"
       >
         Home
-      </a>
-      <a
+      </Link>
+      <Link
         href="/podcast"
         className="text-gray-900 hover:text-[#D83232] font-body font-normal text-base transition-colors"
       >
         Podcast
-      </a>
-      <a
+      </Link>
+      <Link
         href="/blog"
         className="text-gray-900 hover:text-[#D83232] font-body font-normal text-base transition-colors"
       >
         Blog
-      </a>
+      </Link>
 
       {/* Discover Dropdown */}
       <div className="relative">

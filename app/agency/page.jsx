@@ -97,7 +97,7 @@ const MapPinIcon = ({ className }) => (
   </svg>
 );
 
-export const AnnouncerCard = ({ name, role, imageSrc }) => (
+const AnnouncerCard = ({ name, role, imageSrc }) => (
   <div className="rounded-xl  overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 text-center">
     <div className="relative h-80 w-full">
       <Image
@@ -126,7 +126,7 @@ export const AnnouncerCard = ({ name, role, imageSrc }) => (
   </div>
 );
 
-export const HeroSection = () => (
+const HeroSection = () => (
   <section className="relative w-full min-h-150 md:min-h-[500px] flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-28 pb-20 md:pb-0">
     <div className="absolute inset-0 z-10 pointer-events-none">
       <div className="absolute right-0 bottom-0 md:top-1/8 w-140 translate-x-1/3 md:w-300 z-0 pointer-events-none">
@@ -183,7 +183,7 @@ export const HeroSection = () => (
   </section>
 );
 
-export const AnnouncerServicesSection = () => (
+const AnnouncerServicesSection = () => (
   <section className="relative pt-40 bg-white from-white via-[#c59402] to-white overflow-hidden">
     <div className="absolute inset-0 top-1/12 md:top-0 left-0 z-50 w-30 md:w-60 h-60 ">
       <Image
@@ -275,7 +275,7 @@ export const AnnouncerServicesSection = () => (
   </section>
 );
 
-export const AnnouncersSection = () => (
+const AnnouncersSection = () => (
   <section className="pb-12 bg-gradient-to-b from-orange-400 via-orange-300 to-orange-200 text-gray-800">
     {/* <Image
         src="/agency-white-transition.png"
@@ -297,7 +297,7 @@ export const AnnouncersSection = () => (
     </div>
   </section>
 );
-export const ReporterSection = () => (
+const ReporterSection = () => (
   <section className="pb-12 bg-gradient-to-b from-orange-400 via-orange-300 to-orange-200 text-gray-800">
     {/* <Image
         src="/agency-white-transition.png"
@@ -320,7 +320,7 @@ export const ReporterSection = () => (
   </section>
 );
 
-export const MarketingSection = () => (
+const MarketingSection = () => (
   <section className="pb-12 bg-gradient-to-b from-orange-400 via-orange-300 to-orange-200 text-gray-800">
     {/* <Image
         src="/agency-white-transition.png"
@@ -343,7 +343,7 @@ export const MarketingSection = () => (
   </section>
 );
 
-export const ContactSection = () => (
+const ContactSection = () => (
   <section className="relative w-full bg-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
     {/* Elemen Grafis Latar Belakang */}
     <div

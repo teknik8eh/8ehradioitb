@@ -1,4 +1,4 @@
-export default function ButtonPrimary({ children, onClick, className = "", ...props }) {
+export default function ButtonPrimary({ children, onClick = undefined, className = "", ...props }) {
   const buttonStyles = {
     boxShadow: `
       0 1px 2px rgba(2, 8, 11, 0.05),

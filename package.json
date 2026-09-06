@@ -4,9 +4,9 @@
   "private": true,
   "packageManager": "bun@1.3.4",
   "scripts": {
-    "dev": "bun --bun next dev",
-    "build": "bun --bun next build",
-    "start": "bun --bun next start",
+    "dev": "bun next dev",
+    "build": "bun next build",
+    "start": "bun next start",
     "lint": "bun --bun next lint",
     "vercel-build": "bunx prisma generate && bun --bun next build",
     "format": "prettier --write \"src/**/*.{js,jsx}\""
@@ -26,11 +26,15 @@
     "critters": "^0.0.23",
     "formidable": "^3.5.4",
     "icy": "^2.1.0",
+    "iron-session": "^8.0.4",
+    "mongodb": "^7.3.0",
     "nanoid": "^5.1.5",
     "next": "^15.5.12",
     "next-auth": "^4.24.13",
     "prisma": "^6.14.0",
     "prop-types": "^15.8.1",
+    "pusher": "^5.3.4",
+    "pusher-js": "^8.5.0",
     "qrcode.react": "^4.2.0",
     "radix-ui": "^1.4.2",
     "react": "^19.2.4",
@@ -42,6 +46,7 @@
     "swiper": "^11.0.0",
     "swr": "^2.3.8",
     "wavesurfer.js": "^7.10.1",
+    "ws": "^8.21.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

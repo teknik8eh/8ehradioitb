@@ -1,7 +1,7 @@
 import { streamText } from "ai";
 import { google } from "@ai-sdk/google";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { hasAnyRole } from "@/lib/roleUtils";
 
 // Rate limiting - simple in-memory store (consider Redis for production)
