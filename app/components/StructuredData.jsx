@@ -4,14 +4,14 @@ export default function StructuredData() {
     "@graph": [
       {
         "@type": "RadioStation",
-        "@id": "https://8ehradioitb.com/#radio",
+        "@id": "https://www.8ehradioitb.com/#radio",
         "name": "8EH Radio ITB",
         "alternateName": "8EH Radio",
         "description": "Tempatnya semua informasi dan hiburan untuk Kampus Mania. Dengarkan berita terbaru, musik pilihan, dan podcast yang seru hanya di 8EH Radio ITB, Your Edutainment and Music Station!",
-        "url": "https://8ehradioitb.com",
+        "url": "https://www.8ehradioitb.com",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://8ehradioitb.com/8eh-real-long.png",
+          "url": "https://www.8ehradioitb.com/8eh-real-long.png",
           "width": 300,
           "height": 100
         },
@@ -43,17 +43,17 @@ export default function StructuredData() {
         "publisher": {
           "@type": "Organization",
           "name": "8EH Radio ITB",
-          "url": "https://8ehradioitb.com"
+          "url": "https://www.8ehradioitb.com"
         }
       },
       {
         "@type": "Organization",
-        "@id": "https://8ehradioitb.com/#organization",
+        "@id": "https://www.8ehradioitb.com/#organization",
         "name": "8EH Radio ITB",
-        "url": "https://8ehradioitb.com",
+        "url": "https://www.8ehradioitb.com",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://8ehradioitb.com/8eh-real-long.png"
+          "url": "https://www.8ehradioitb.com/8eh-real-long.png"
         },
         "sameAs": [
           "https://instagram.com/8ehradioitb",
@@ -69,17 +69,17 @@ export default function StructuredData() {
       },
       {
         "@type": "WebSite",
-        "@id": "https://8ehradioitb.com/#website",
-        "url": "https://8ehradioitb.com",
+        "@id": "https://www.8ehradioitb.com/#website",
+        "url": "https://www.8ehradioitb.com",
         "name": "8EH Radio ITB",
         "description": "Tempatnya semua informasi dan hiburan untuk Kampus Mania. Dengarkan berita terbaru, musik pilihan, dan podcast yang seru hanya di 8EH Radio ITB, Your Edutainment and Music Station!",
         "publisher": {
-          "@id": "https://8ehradioitb.com/#organization"
+          "@id": "https://www.8ehradioitb.com/#organization"
         },
         "potentialAction": [
           {
             "@type": "ListenAction",
-            "target": "https://8ehradioitb.com",
+            "target": "https://www.8ehradioitb.com",
             "actionStatus": "PotentialActionStatus"
           }
         ]
