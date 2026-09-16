@@ -94,7 +94,7 @@ export const metadata = {
   manifest: "/manifest.json",
   openGraph: {
     siteName: "8EH Radio ITB",
-    url: "https://8ehradioitb.com",
+    url: "https://www.8ehradioitb.com",
     type: "website",
     title: "8EH Radio ITB",
     description:
@@ -115,7 +115,7 @@ export const metadata = {
     site: "@8ehradioitb",
     creator: "@8ehradioitb",
     domain: "8ehradioitb.com",
-    url: "https://8ehradioitb.com",
+    url: "https://www.8ehradioitb.com",
     title: "8EH Radio ITB",
     description:
       "Tempatnya semua informasi dan hiburan untuk Kampus Mania. Dengarkan berita terbaru, musik pilihan, dan podcast yang seru hanya di 8EH Radio ITB, Your Edutainment and Music Station!",
@@ -127,12 +127,12 @@ export const metadata = {
     ],
   },
   alternates: {
-    canonical: "https://8ehradioitb.com",
+    canonical: "https://www.8ehradioitb.com",
     languages: {
-      "id-ID": "https://8ehradioitb.com",
+      "id-ID": "https://www.8ehradioitb.com",
     },
   },
-  metadataBase: new URL("https://8ehradioitb.com"),
+  metadataBase: new URL("https://www.8ehradioitb.com"),
   other: {
     "theme-color": "#EA4A30",
     "color-scheme": "light",

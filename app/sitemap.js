@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
 
+export const revalidate = 3600; // ponytail: sitemap harus fresh tiap jam; force-dynamic kalau 1 jam masih terlalu basi
+
 export default async function sitemap() {
-  const baseUrl = "https://8ehradioitb.com";
+  const baseUrl = "https://www.8ehradioitb.com";
 
   // Static pages
   const staticPages = [

@@ -9,13 +9,13 @@ export const metadata = {
   description:
     "Baca artikel terbaru dari 8EH Radio ITB. Berita kampus, ulasan musik, liputan acara, dan konten edutainment untuk Kampus Mania.",
   alternates: {
-    canonical: "https://8ehradioitb.com/blog",
+    canonical: "https://www.8ehradioitb.com/blog",
   },
   openGraph: {
     title: "Blog — 8EH Radio ITB",
     description:
       "Baca artikel terbaru dari 8EH Radio ITB. Berita kampus, ulasan musik, liputan acara, dan konten edutainment untuk Kampus Mania.",
-    url: "https://8ehradioitb.com/blog",
+    url: "https://www.8ehradioitb.com/blog",
     type: "website",
     images: [
       {
