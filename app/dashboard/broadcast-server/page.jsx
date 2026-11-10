@@ -139,7 +139,8 @@ function getStatusCopy(state) {
   }
   if (state.status === "failed") {
     return {
-      description: "Proses berhenti. Cek pesan error, lalu Retry jika sudah siap.",
+      description:
+        "Proses berhenti. Cek pesan error, lalu Retry jika sudah siap.",
       tone: "bg-red-50 border-red-200 text-red-800",
       iconTone: "bg-red-100 text-red-700",
     };
@@ -237,7 +238,8 @@ export default function BroadcastServerPage() {
 
   const availableActions = useMemo(() => {
     if (state.status === "idle") return ["start"];
-    if (state.status === "running") return canExtend ? ["extend", "end"] : ["end"];
+    if (state.status === "running")
+      return canExtend ? ["extend", "end"] : ["end"];
     if (state.status === "failed") return ["retry"];
     return [];
   }, [canExtend, state.status]);
@@ -416,7 +418,9 @@ export default function BroadcastServerPage() {
 
       {(isTransient || runningAction) && (
         <section className="rounded-lg border border-blue-200 bg-blue-50 p-4 font-body text-sm text-blue-800">
-          <p className="font-bold">Tetap di halaman ini sampai proses selesai.</p>
+          <p className="font-bold">
+            Tetap di halaman ini sampai proses selesai.
+          </p>
           <p className="mt-1">
             {getProgressLabel(state.status)}. Halaman ini refresh otomatis.
           </p>
@@ -475,7 +479,11 @@ export default function BroadcastServerPage() {
         <section className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
           <div className="flex items-start gap-3">
             <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700">
-              {isTransient ? <FiRefreshCw className="animate-spin" /> : <FiInfo />}
+              {isTransient ? (
+                <FiRefreshCw className="animate-spin" />
+              ) : (
+                <FiInfo />
+              )}
             </div>
             <div>
               <h2 className="font-heading text-xl font-bold text-gray-900">
@@ -545,12 +553,24 @@ export default function BroadcastServerPage() {
           <InfoCard label="Active Server ID" value={state.activeServerId} />
           <InfoCard label="Server Name" value={state.serverName} />
           <InfoCard label="Latest Snapshot ID" value={state.latestSnapshotId} />
-          <InfoCard label="Pending Snapshot ID" value={state.pendingSnapshotId} />
+          <InfoCard
+            label="Pending Snapshot ID"
+            value={state.pendingSnapshotId}
+          />
           <InfoCard label="Started At" value={formatDate(state.startedAt)} />
           <InfoCard label="Ended At" value={formatDate(state.endedAt)} />
-          <InfoCard label="Auto End Started At" value={formatDate(state.autoEndStartedAt)} />
-          <InfoCard label="Last Watchdog At" value={formatDate(state.lastWatchdogAt)} />
-          <InfoCard label="Last Watchdog Action" value={state.lastWatchdogAction} />
+          <InfoCard
+            label="Auto End Started At"
+            value={formatDate(state.autoEndStartedAt)}
+          />
+          <InfoCard
+            label="Last Watchdog At"
+            value={formatDate(state.lastWatchdogAt)}
+          />
+          <InfoCard
+            label="Last Watchdog Action"
+            value={state.lastWatchdogAction}
+          />
           <InfoCard label="Server Type" value={config.serverType} />
           <InfoCard label="Location" value={config.location} />
         </div>
@@ -577,7 +597,9 @@ export default function BroadcastServerPage() {
             )}
             <input
               value={confirmText}
-              onChange={(event) => setConfirmText(event.target.value.toUpperCase())}
+              onChange={(event) =>
+                setConfirmText(event.target.value.toUpperCase())
+              }
               className="mt-4 w-full rounded-md border border-gray-300 bg-white p-3 font-body text-gray-900 focus:border-red-500 focus:ring-2 focus:ring-red-500"
               autoFocus
             />
