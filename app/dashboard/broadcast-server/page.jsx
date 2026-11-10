@@ -152,7 +152,8 @@ function getStatusCopy(state) {
 }
 
 function getProgressLabel(status) {
-  if (["creating", "booting"].includes(status)) return "Menyiapkan server siaran";
+  if (["creating", "booting"].includes(status))
+    return "Menyiapkan server siaran (bisa 10-20 menit)";
   if (status === "running") return "Server siap dipakai";
   if (["ending", "snapshotting", "deleting"].includes(status)) {
     return "Menyimpan data siaran dan mematikan server";
@@ -227,7 +228,11 @@ export default function BroadcastServerPage() {
     minutesUntilAutoEnd <= (config.extendMinutes || 60);
   const selectedAction = confirmAction ? ACTIONS[confirmAction] : null;
   const statusCopy = getStatusCopy(state);
-  const simpleError = getSimpleError(error || state.lastError);
+  // Sembunyikan pesan error saat proses masih berjalan — pesan "fetch failed"
+  // saat booting/snapshotting adalah normal, bukan error sesungguhnya.
+  const simpleError = isTransient
+    ? ""
+    : getSimpleError(error || state.lastError);
   const autoEndStatus = getAutoEndStatus(state, config, minutesUntilAutoEnd);
 
   const availableActions = useMemo(() => {
