@@ -154,7 +154,7 @@ function getStatusCopy(state) {
 
 function getProgressLabel(status) {
   if (["creating", "booting"].includes(status))
-    return "Menyiapkan server siaran (biasanya 1-3 menit)";
+    return "Menyiapkan server siaran";
   if (status === "running") return "Server siap dipakai";
   if (["ending", "snapshotting", "deleting"].includes(status)) {
     return "Menyimpan data siaran dan mematikan server";
