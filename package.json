@@ -5,6 +5,7 @@
   "packageManager": "bun@1.3.4",
   "scripts": {
     "dev": "bun next dev",
+    "postinstall": "prisma generate",
     "build": "bun next build",
     "start": "bun next start",
     "lint": "bun --bun next lint",
