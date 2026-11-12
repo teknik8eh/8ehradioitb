@@ -141,7 +141,7 @@ function StructureView({ onSelectBranch }) {
 
 function MemberCard({ member, idx }) {
   return (
-    <div className="flex flex-col items-center text-center space-y-4">
+    <div className="flex flex-col items-center text-center space-y-4 w-40 sm:w-44">
       <div className="w-36 h-36 rounded-lg bg-gray-200 flex items-center justify-center overflow-hidden">
         <Image
           src={member.photoUrl}
@@ -215,9 +215,9 @@ function DetailView({ branchId }) {
       </div>
 
       {members.length <= 8 ? (
-        /* Centered grid when everything fits on one page */
+        /* Centered flex grid when everything fits on one page */
         <div className="w-full p-6 rounded-2xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-10">
             {members.map((member, idx) => (
               <MemberCard key={idx} member={member} idx={idx} />
             ))}
