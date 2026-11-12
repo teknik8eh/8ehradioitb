@@ -25,16 +25,39 @@ function countMembers(node) {
 
 const branches = boardData.children || [];
 
+// Include GM as a selectable "branch" (its members = the GM alone)
+const navItems = [
+  {
+    id: "gm",
+    label: "General Manager",
+    members: [
+      {
+        name: boardData.name,
+        role: boardData.role,
+        angkatan: boardData.angkatan,
+        ig: boardData.ig,
+        linkedin: boardData.linkedin,
+        photoUrl: getAssetUrl(boardData.photo) || "/8eh-real.svg",
+      },
+    ],
+  },
+  ...branches.map((branch) => ({
+    id: branch.id,
+    label: branch.role.replace(" Director", "").replace(" and ", " & "),
+    members: flattenMembers(branch).map((m) => ({
+      name: m.name,
+      role: m.role,
+      angkatan: m.angkatan,
+      ig: m.ig,
+      linkedin: m.linkedin,
+      photoUrl: getAssetUrl(m.photo) || "/8eh-real.svg",
+    })),
+  })),
+];
+
 const branchMembers = {};
-for (const branch of branches) {
-  branchMembers[branch.id] = flattenMembers(branch).map((m) => ({
-    name: m.name,
-    role: m.role,
-    angkatan: m.angkatan,
-    ig: m.ig,
-    linkedin: m.linkedin,
-    photoUrl: getAssetUrl(m.photo) || "/8eh-real.svg",
-  }));
+for (const item of navItems) {
+  branchMembers[item.id] = item.members;
 }
 
 // Pill styled after ButtonPrimary (bg #D83232, inset shadows)
@@ -120,8 +143,8 @@ function StructureView({ onSelectBranch }) {
 }
 
 function DetailView({ branchId }) {
-  const branch = branches.find((b) => b.id === branchId);
   const members = branchMembers[branchId] || [];
+  const title = navItems.find((item) => item.id === branchId)?.label;
 
   return (
     <>
@@ -131,7 +154,7 @@ function DetailView({ branchId }) {
       </Head>
       <div className="mb-6 text-center">
         <h3 className="font-heading font-semibold text-2xl text-gray-900">
-          {branch?.role}
+          {title}
         </h3>
       </div>
       <Swiper
@@ -245,44 +268,72 @@ export default function BoardSliderMB() {
   return (
     <div className="w-full">
       {/* Pill navigation */}
-      <div className="flex items-center gap-3 overflow-x-auto pb-2 mb-6">
-        {activeBranch && (
-          <button
-            onClick={() => setActiveBranch(null)}
-            className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-body font-medium text-sm text-white bg-[#D83232] hover:bg-[#B72929] transition-colors cursor-pointer"
-            style={pillShadow}
-          >
-            <svg
-              className="w-3.5 h-3.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
+      <div className="flex flex-wrap items-center justify-center gap-3 pb-2 mb-6">
+        <div
+          className={`flex items-center gap-3 overflow-x-auto transition-all duration-300 ease-in-out ${activeBranch ? "max-w-full opacity-100" : "max-w-0 opacity-0"}`}
+        >
+          {activeBranch && (
+            <button
+              onClick={() => setActiveBranch(null)}
+              className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-body font-medium text-sm text-white bg-[#D83232] hover:bg-[#B72929] transition-colors cursor-pointer"
+              style={pillShadow}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Struktur
-          </button>
-        )}
-        {branches.map((branch) => (
+              <svg
+                className="w-3.5 h-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              Struktur
+            </button>
+          )}
+        </div>
+        {navItems.map((item) => (
           <BranchPill
-            key={branch.id}
-            label={branch.role.replace(" Director", "").replace(" and ", " & ")}
-            active={activeBranch === branch.id}
-            onClick={() => setActiveBranch(branch.id)}
+            key={item.id}
+            label={item.label}
+            active={activeBranch === item.id}
+            onClick={() => setActiveBranch(item.id)}
           />
         ))}
       </div>
 
-      {activeBranch ? (
-        <DetailView branchId={activeBranch} />
-      ) : (
-        <StructureView onSelectBranch={setActiveBranch} />
-      )}
+      {/* View container animation */}
+      <style jsx global>{`
+        @keyframes view-in {
+          from {
+            opacity: 0;
+            transform: translateY(12px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-view-in {
+          animation: view-in 0.3s ease-out;
+        }
+        .board-swiper .swiper-button-prev,
+        .board-swiper .swiper-button-next {
+          color: #6b7280;
+        }
+      `}</style>
+
+      {/* View with fade/slide transition on branch switch */}
+      <div key={activeBranch ?? "structure"} className="animate-view-in">
+        {activeBranch ? (
+          <DetailView branchId={activeBranch} />
+        ) : (
+          <StructureView onSelectBranch={setActiveBranch} />
+        )}
+      </div>
     </div>
   );
 }
