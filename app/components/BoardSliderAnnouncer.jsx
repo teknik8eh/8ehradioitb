@@ -4,46 +4,20 @@ import Image from "next/image";
 import Head from "next/head";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Grid } from "swiper/modules";
-import announcerData from "@/public/list_name_linkedin_ig_ann.json";
+import announcerData from "@/public/data/announcers.json";
 
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/grid";
-
-const photoPaths = {
-  "Shantika Ersa Alecya":
-    "/foto-announcer/Screenshot_2025-05-22-09-05-32-69_99c04817c0de5652397fc8b56c3b3817 - Shantika Ersa Alecya.jpg",
-  "Marsela Wanda Arista": "/foto-announcer/IMG_2338 - Marsela Wanda.jpg",
-  "Maurana Idzil Fikryansyah":
-    "/foto-announcer/IMG_4757 - Maurana Idzil Fikriansyah.jpeg",
-  "Khalisa Nadya Lazuardi": "/foto-announcer/IMG_6965 - KL24-025-Zuzu.jpeg",
-  "Nur Sofita": "/foto-announcer/IMG_1121 - Nur Sofita.jpeg",
-  "Juliene Najla Aninditya":
-    "/foto-announcer/foto juliene - Juliene Najla Aninditya.jpg",
-  "Emir Muhammad Firassiyan": "/foto-announcer/6 - Emir Muhammad.png",
-  "Rinjani Aulia Syifa": "/foto-announcer/IMG_3364 - Rinjani Aulia Syifa.jpeg",
-  "Darren Valerian":
-    "/foto-announcer/10524064_Darren Valerian_Foto diri - Darren Valerian.jpg",
-  "Nadhifa Zavrina Musmarliansyah":
-    "/foto-announcer/EBAD6C6A-7D18-4953-9901-4A84A5EAF1F1 - Nadhifa Z. M..jpeg",
-  "Hamzah Abdul Rahim": "/foto-announcer/IMG_0365 - Hamzah Abdul Rahim.jpeg",
-  "Dicky Ardiansyah":
-    "/foto-announcer/IMG-20250212-WA0118 - Dicky Ardiansyah.jpg",
-  "Zahra Aulia":
-    "/foto-announcer/Picsart_25-05-21_20-30-27-988 - Zahra Aulia.jpg",
-  "Nudia Salsabila": "/foto-announcer/FOTO NUD - Nudia Salsabila.jpg",
-  "Theresya Rafaela Aritonang":
-    "/foto-announcer/IMG_5330 - Theresya Rafaela A.jpeg",
-  "Fauzia Marchinda Fezavera": "/foto-announcer/IMG_8080.PNG",
-};
+import { getAssetUrl } from "@/lib/audioUtils";
 
 // Get announcer members from the JSON data
-const members = announcerData.Announcers.map((announcer) => ({
+const members = announcerData.map((announcer) => ({
   name: announcer.name,
   role: "Announcer",
   ig: announcer.ig,
   linkedin: announcer.linkedin,
-  photoUrl: photoPaths[announcer.name] || "/8eh-real.svg",
+  photoUrl: getAssetUrl(announcer.photo) || "/8eh-real.svg",
 }));
 
 export default function BoardSliderAnnouncer() {
@@ -94,7 +68,7 @@ export default function BoardSliderAnnouncer() {
                 <p className="font-body text-sm text-gray-500">{member.role}</p>
               </div>
               <div className="flex space-x-4">
-                {member.linkedin && (
+                {(member.linkedin && (
                   <a
                     href={member.linkedin}
                     target="_blank"
@@ -108,8 +82,17 @@ export default function BoardSliderAnnouncer() {
                       height={24}
                     />
                   </a>
+                )) || (
+                  <div className="w-6 h-6 opacity-30">
+                    <Image
+                      src="/LinkedIn.svg"
+                      alt="LinkedIn"
+                      width={24}
+                      height={24}
+                    />
+                  </div>
                 )}
-                {member.ig && (
+                {(member.ig && (
                   <a
                     href={`https://instagram.com/${member.ig}`}
                     target="_blank"
@@ -123,6 +106,15 @@ export default function BoardSliderAnnouncer() {
                       height={24}
                     />
                   </a>
+                )) || (
+                  <div className="w-6 h-6 opacity-30">
+                    <Image
+                      src="/Instagram.svg"
+                      alt="Instagram"
+                      width={24}
+                      height={24}
+                    />
+                  </div>
                 )}
               </div>
             </div>

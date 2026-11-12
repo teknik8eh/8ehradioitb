@@ -1,0 +1,389 @@
+{
+  "id": "gm",
+  "role": "General Manager",
+  "name": "M. Jordan Ferimeison",
+  "angkatan": "IF'24",
+  "ig": "",
+  "linkedin": "",
+  "photo": "",
+  "children": [
+    {
+      "id": "gensec",
+      "role": "General Secretary",
+      "name": "Theresya Rafaela A.",
+      "angkatan": "KL'24",
+      "ig": "",
+      "linkedin": "",
+      "photo": "",
+      "children": [
+        {
+          "id": "finance-manager",
+          "role": "Finance Manager",
+          "name": "Naila Muyassarah A.",
+          "angkatan": "KI'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-finance-manager",
+              "role": "Vice Finance Manager",
+              "name": "Marsela Wanda Arista",
+              "angkatan": "FA'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "ha-manager",
+          "role": "Household and Administration Manager",
+          "name": "Alifia Ayena W.",
+          "angkatan": "FA'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-ha-manager",
+              "role": "Vice Household and Administration Manager",
+              "name": "Haikal Triza Ananda",
+              "angkatan": "KL'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hrd",
+      "role": "Human Resource Development Director",
+      "name": "Galuh Maharani P.",
+      "angkatan": "KL'24",
+      "ig": "",
+      "linkedin": "",
+      "photo": "",
+      "children": [
+        {
+          "id": "people-management-manager",
+          "role": "People Management Manager",
+          "name": "Wira A. Fadillaufa",
+          "angkatan": "MG'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": []
+        },
+        {
+          "id": "people-culture-manager",
+          "role": "People and Culture Manager",
+          "name": "Nashwa Kamila",
+          "angkatan": "PG'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-people-culture-manager",
+              "role": "Vice People and Culture Manager",
+              "name": "Barsa Naadhir A.",
+              "angkatan": "MT'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "agency-manager",
+          "role": "Agency Manager",
+          "name": "Darren Valerian",
+          "angkatan": "KI'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "rnd",
+      "role": "Research and Development Director",
+      "name": "Kresensia Aretha N.",
+      "angkatan": "MT'24",
+      "ig": "",
+      "linkedin": "",
+      "photo": "",
+      "children": [
+        {
+          "id": "vice-rnd",
+          "role": "Vice Research and Development Director",
+          "name": "Tazkia Zahra Aulia",
+          "angkatan": "MB'27",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "brand-awareness",
+      "role": "Brand Awareness Director",
+      "name": "Zahrah Nur Azizah",
+      "angkatan": "II'24",
+      "ig": "",
+      "linkedin": "",
+      "photo": "",
+      "children": [
+        {
+          "id": "marketing-manager",
+          "role": "Marketing Manager",
+          "name": "Aliya Zahra",
+          "angkatan": "BM'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-marketing-manager",
+              "role": "Vice Marketing Manager",
+              "name": "Hamima Husna Nur S.",
+              "angkatan": "FA'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "content-manager",
+          "role": "Content Manager",
+          "name": "Nabila Naila Hendrawan",
+          "angkatan": "PL'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-content-manager",
+              "role": "Vice Content Manager",
+              "name": "Evangeline Agnesia",
+              "angkatan": "FA'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "reporter-manager",
+          "role": "Reporter Manager",
+          "name": "Rezha Yusa Andika",
+          "angkatan": "OS'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-reporter-manager",
+              "role": "Vice Reporter Manager",
+              "name": "Ivan Sultan Firmansyah",
+              "angkatan": "TT'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            },
+            {
+              "id": "news-manager",
+              "role": "News Manager",
+              "name": "Iasha Putri Izzaty",
+              "angkatan": "BA'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "technic-manager",
+          "role": "Technic Manager",
+          "name": "Emir Muhammad F.",
+          "angkatan": "II'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-technic-manager",
+              "role": "Vice Technic Manager",
+              "name": "Fayyadh Ramadhan",
+              "angkatan": "EL'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "station",
+      "role": "Station Director",
+      "name": "Nadhifa Z. Musmarliansyah",
+      "angkatan": "AR'24",
+      "ig": "",
+      "linkedin": "",
+      "photo": "",
+      "children": [
+        {
+          "id": "vice-station-director",
+          "role": "Vice Station Director",
+          "name": "Juliana Aninditya",
+          "angkatan": "PL'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": []
+        },
+        {
+          "id": "producer-manager",
+          "role": "Producer Manager",
+          "name": "Nazwa Putri Cempaka",
+          "angkatan": "KL'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-producer-manager",
+              "role": "Vice Producer Manager",
+              "name": "Hillary Gwen Hartono",
+              "angkatan": "AE'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "music-manager",
+          "role": "Music Manager",
+          "name": "M. Zydan Zyad",
+          "angkatan": "MB'27",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-music-manager",
+              "role": "Vice Music Manager",
+              "name": "Khalisa Nadya Lazuardi",
+              "angkatan": "KL'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "announcer-manager",
+          "role": "Announcer Manager",
+          "name": "Hamzah Abdul Rahim",
+          "angkatan": "EL'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-announcer-manager",
+              "role": "Vice Announcer Manager",
+              "name": "Shantika Elsa Alecya",
+              "angkatan": "MG'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pr",
+      "role": "Public Relations Director",
+      "name": "Kayla Olivia Putri",
+      "angkatan": "ET'24",
+      "ig": "",
+      "linkedin": "",
+      "photo": "",
+      "children": [
+        {
+          "id": "partnership-manager",
+          "role": "Partnership Manager",
+          "name": "Aisyah Nurul Rahmawati",
+          "angkatan": "TL'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-partnership-manager",
+              "role": "Vice Partnership Manager",
+              "name": "Nadira Zahra Adinda E. P.",
+              "angkatan": "TK'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "intracampus-manager",
+          "role": "Intracampus Manager",
+          "name": "Claudine Mayra Hartono",
+          "angkatan": "PG'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": []
+        },
+        {
+          "id": "extracampus-manager",
+          "role": "Extracampus Manager",
+          "name": "Nasywa Callista Ria P.",
+          "angkatan": "AR'24",
+          "ig": "",
+          "linkedin": "",
+          "photo": "",
+          "children": [
+            {
+              "id": "vice-extracampus-manager",
+              "role": "Vice Extracampus Manager",
+              "name": "Maurana Idzil Fikriyansyah",
+              "angkatan": "SD'24",
+              "ig": "",
+              "linkedin": "",
+              "photo": "",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

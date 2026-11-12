@@ -4,7 +4,7 @@ import Navbar from "@/app/components/Navbar";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import RadioPlayer from "@/app/components/RadioPlayer";
 import { useState, useRef } from "react";
-import BoardSliderMB from "@/app/components/BoardSliderMB";
+import OrgChartMB from "@/app/components/OrgChartMB";
 import FooterSection from "@/app/components/FooterSection";
 
 const discoverCards = [
@@ -272,8 +272,8 @@ export default function AboutUs() {
             Temui para personel keren dibalik 8EH Radio ITB
           </p>
 
-          {/* Board Grid */}
-          <BoardSliderMB />
+          {/* Board Org Chart */}
+          <OrgChartMB />
         </div>
       </section>
 
