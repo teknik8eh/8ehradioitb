@@ -91,7 +91,7 @@ function StructureView({ onSelectBranch }) {
   return (
     <div className="flex flex-col items-center py-8">
       {/* GM node */}
-      <div className="px-8 py-3 bg-white rounded-2xl drop-shadow-md border border-gray-200 text-center">
+      <div className="px-8 py-3 bg-white rounded-2xl shadow-xs border border-zinc-200 text-center">
         <p className="font-heading font-semibold text-base text-red-600">
           General Manager
         </p>
@@ -112,16 +112,13 @@ function StructureView({ onSelectBranch }) {
               <div className="w-px h-6 bg-gray-300" />
               <button
                 onClick={() => onSelectBranch(branch.id)}
-                className="w-full min-h-[96px] flex flex-col items-center justify-center gap-1 px-3 py-3 bg-white rounded-2xl drop-shadow-md border border-gray-200 text-center cursor-pointer hover:-translate-y-0.5 hover:border-red-200 transition-all"
+                className="w-full min-h-[96px] flex flex-col items-center justify-center gap-1 px-3 py-3 bg-white rounded-2xl shadow-xs border border-zinc-200 text-center cursor-pointer hover:-translate-y-0.5 hover:border-red-200 transition-all"
               >
                 <p className="font-heading font-semibold text-[13px] leading-snug text-red-600">
                   {branch.role}
                 </p>
-                <p className="font-body text-[11px] text-gray-400">
-                  {countMembers(branch)} orang
-                </p>
                 <svg
-                  className="w-3.5 h-3.5 text-red-600"
+                  className="w-3.5 h-3.5 mt-2 text-red-600"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -142,6 +139,65 @@ function StructureView({ onSelectBranch }) {
   );
 }
 
+function MemberCard({ member, idx }) {
+  return (
+    <div className="flex flex-col items-center text-center space-y-4">
+      <div className="w-36 h-36 rounded-lg bg-gray-200 flex items-center justify-center overflow-hidden">
+        <Image
+          src={member.photoUrl}
+          alt={`Photo of ${member.name}`}
+          width={144}
+          height={144}
+          className="object-cover w-full h-full"
+          priority={idx < 8}
+          loading={idx < 8 ? "eager" : "lazy"}
+        />
+      </div>
+      <div>
+        <h3 className="font-heading font-semibold text-lg text-gray-900">
+          {member.name}
+        </h3>
+        <p className="font-body text-sm text-gray-500">{member.role}</p>
+        {member.angkatan && (
+          <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold text-red-600 bg-red-50 border border-red-100 rounded-full">
+            {member.angkatan}
+          </span>
+        )}
+      </div>
+      <div className="flex space-x-4">
+        {(member.linkedin && (
+          <a
+            href={member.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-6 h-6 text-gray-500 hover:text-gray-800 transition-colors"
+          >
+            <Image src="/LinkedIn.svg" alt="LinkedIn" width={24} height={24} />
+          </a>
+        )) || (
+          <div className="w-6 h-6 opacity-30">
+            <Image src="/LinkedIn.svg" alt="LinkedIn" width={24} height={24} />
+          </div>
+        )}
+        {(member.ig && (
+          <a
+            href={`https://instagram.com/${member.ig}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-6 h-6 text-gray-500 hover:text-gray-800 transition-colors"
+          >
+            <Image src="/Instagram.svg" alt="Instagram" width={24} height={24} />
+          </a>
+        )) || (
+          <div className="w-6 h-6 opacity-30">
+            <Image src="/Instagram.svg" alt="Instagram" width={24} height={24} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function DetailView({ branchId }) {
   const members = branchMembers[branchId] || [];
   const title = navItems.find((item) => item.id === branchId)?.label;
@@ -157,20 +213,31 @@ function DetailView({ branchId }) {
           {title}
         </h3>
       </div>
-      <Swiper
-        modules={[Navigation, Grid]}
-        spaceBetween={20}
-        slidesPerView={4}
-        slidesPerGroup={1}
-        grid={{ rows: 2, fill: "row" }}
-        navigation
-        breakpoints={{
-          0: { slidesPerView: 1, grid: { rows: 2 } },
-          640: { slidesPerView: 2, grid: { rows: 2 } },
-          1024: { slidesPerView: 4, grid: { rows: 2 } },
-        }}
-        className="board-swiper w-full p-6 rounded-2xl"
-      >
+
+      {members.length <= 8 ? (
+        /* Centered grid when everything fits on one page */
+        <div className="w-full p-6 rounded-2xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+            {members.map((member, idx) => (
+              <MemberCard key={idx} member={member} idx={idx} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <Swiper
+          modules={[Navigation, Grid]}
+          spaceBetween={20}
+          slidesPerView={4}
+          slidesPerGroup={4}
+          grid={{ rows: 2, fill: "row" }}
+          navigation
+          breakpoints={{
+            0: { slidesPerView: 1, grid: { rows: 2 } },
+            640: { slidesPerView: 2, grid: { rows: 2 } },
+            1024: { slidesPerView: 4, grid: { rows: 2 } },
+          }}
+          className="board-swiper w-full p-6 rounded-2xl"
+        >
         <style jsx global>{`
           .board-swiper .swiper-button-prev,
           .board-swiper .swiper-button-next {
@@ -179,85 +246,11 @@ function DetailView({ branchId }) {
         `}</style>
         {members.map((member, idx) => (
           <SwiperSlide key={idx} className="pb-8">
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-36 h-36 rounded-lg bg-gray-200 flex items-center justify-center overflow-hidden">
-                <Image
-                  src={member.photoUrl}
-                  alt={`Photo of ${member.name}`}
-                  width={144}
-                  height={144}
-                  className="object-cover w-full h-full"
-                  priority={idx < 8}
-                  loading={idx < 8 ? "eager" : "lazy"}
-                />
-              </div>
-              <div>
-                <h3 className="font-heading font-semibold text-lg text-gray-900">
-                  {member.name}
-                </h3>
-                <p className="font-body text-sm text-gray-500">
-                  {member.role}
-                </p>
-                {member.angkatan && (
-                  <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold text-red-600 bg-red-50 border border-red-100 rounded-full">
-                    {member.angkatan}
-                  </span>
-                )}
-              </div>
-              <div className="flex space-x-4">
-                {(member.linkedin && (
-                  <a
-                    href={member.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-6 h-6 text-gray-500 hover:text-gray-800 transition-colors"
-                  >
-                    <Image
-                      src="/LinkedIn.svg"
-                      alt="LinkedIn"
-                      width={24}
-                      height={24}
-                    />
-                  </a>
-                )) || (
-                  <div className="w-6 h-6 opacity-30">
-                    <Image
-                      src="/LinkedIn.svg"
-                      alt="LinkedIn"
-                      width={24}
-                      height={24}
-                    />
-                  </div>
-                )}
-                {(member.ig && (
-                  <a
-                    href={`https://instagram.com/${member.ig}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-6 h-6 text-gray-500 hover:text-gray-800 transition-colors"
-                  >
-                    <Image
-                      src="/Instagram.svg"
-                      alt="Instagram"
-                      width={24}
-                      height={24}
-                    />
-                  </a>
-                )) || (
-                  <div className="w-6 h-6 opacity-30">
-                    <Image
-                      src="/Instagram.svg"
-                      alt="Instagram"
-                      width={24}
-                      height={24}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
+            <MemberCard member={member} idx={idx} />
           </SwiperSlide>
         ))}
       </Swiper>
+      )}
     </>
   );
 }
