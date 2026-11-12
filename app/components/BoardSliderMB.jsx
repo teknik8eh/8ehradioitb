@@ -132,6 +132,16 @@ function StructureView({ onSelectBranch }) {
             <div key={branch.id} className="flex flex-col items-center">
               {/* Column connector: stubs from center; right stub extends across the grid gap */}
               <div className="relative w-full">
+                {/* Vertical risers linking wrapped rows (base: rows start at idx 2 & 4; md: idx 3).
+                    They rise from this row's connector, pass BEHIND the previous row's card
+                    (cards are z-10), and merge with the previous column's drop line.
+                    Height = row height (24 drop + 96 card) + row gap (16 base / 24 md). */}
+                {(idx === 2 || idx === 4) && (
+                  <div className="absolute bottom-full left-1/2 -ml-px w-px h-[136px] bg-gray-300 z-0 md:hidden" />
+                )}
+                {idx === 3 && (
+                  <div className="absolute bottom-full left-1/2 -ml-px w-px h-[144px] bg-gray-300 z-0 hidden md:block lg:hidden" />
+                )}
                 <div
                   className={`absolute top-0 left-0 right-1/2 h-px bg-gray-300 ${lineLeft[idx]}`}
                 />
@@ -142,7 +152,7 @@ function StructureView({ onSelectBranch }) {
               </div>
               <button
                 onClick={() => onSelectBranch(branch.id)}
-                className="w-full min-h-[96px] flex flex-col items-center justify-center gap-1 px-3 py-3 bg-[#D83232] rounded-2xl shadow-xs border border-zinc-200 text-center cursor-pointer hover:-translate-y-0.5 hover:border-red-200 transition-all"
+                className="relative z-10 w-full min-h-[96px] flex flex-col items-center justify-center gap-1 px-3 py-3 bg-[#D83232] rounded-2xl shadow-xs border border-zinc-200 text-center cursor-pointer hover:-translate-y-0.5 hover:border-red-200 transition-all"
               >
                 <p className="font-heading font-semibold text-[13px] leading-snug text-white">
                   {branch.role}
@@ -290,12 +300,12 @@ export default function BoardSliderMB() {
 
   return (
     <div className="w-full">
-      {/* Pill navigation — only visible in detail view */}
+      {/* Pill navigation — only visible in detail view; horizontal scroll on mobile */}
       <div
-        className={`flex flex-wrap items-center justify-center gap-3 pb-2 transition-all duration-300 ease-in-out ${activeBranch ? "mb-6 opacity-100" : "mb-0 opacity-0 pointer-events-none"}`}
+        className={`flex items-center gap-3 pb-2 transition-all duration-300 ease-in-out ${activeBranch ? "mb-6 opacity-100" : "mb-0 opacity-0 pointer-events-none"}`}
       >
         <div
-          className={`flex items-center gap-3 overflow-x-auto transition-all duration-300 ease-in-out ${activeBranch ? "max-w-full opacity-100" : "max-w-0 opacity-0"}`}
+          className={`flex-shrink-0 flex items-center gap-3 transition-all duration-300 ease-in-out ${activeBranch ? "max-w-full opacity-100" : "max-w-0 opacity-0"}`}
         >
           <button
             onClick={() => setActiveBranch(null)}
@@ -318,14 +328,16 @@ export default function BoardSliderMB() {
             Struktur
           </button>
         </div>
-        {navItems.map((item) => (
-          <BranchPill
-            key={item.id}
-            label={item.label}
-            active={activeBranch === item.id}
-            onClick={() => setActiveBranch(item.id)}
-          />
-        ))}
+        <div className="pill-scroll flex items-center gap-3 overflow-x-auto md:flex-wrap md:justify-center md:overflow-x-visible pb-1 -mb-1 md:pb-0 md:mb-0">
+          {navItems.map((item) => (
+            <BranchPill
+              key={item.id}
+              label={item.label}
+              active={activeBranch === item.id}
+              onClick={() => setActiveBranch(item.id)}
+            />
+          ))}
+        </div>
       </div>
 
       {/* View container animation */}
@@ -342,6 +354,14 @@ export default function BoardSliderMB() {
         }
         .animate-view-in {
           animation: view-in 0.3s ease-out;
+        }
+        /* thin scrollbar for mobile pill scroll */
+        .pill-scroll::-webkit-scrollbar {
+          height: 4px;
+        }
+        .pill-scroll::-webkit-scrollbar-thumb {
+          background: #d1d5db;
+          border-radius: 9999px;
         }
         .board-swiper .swiper-button-prev,
         .board-swiper .swiper-button-next {
