@@ -55,16 +55,16 @@ function PersonCard({ person, isHead }) {
   const photoUrl = getAssetUrl(person.photo) || "/8eh-real.svg";
   return (
     <div
-      className={`flex flex-col items-center text-center bg-white rounded-2xl drop-shadow-md overflow-hidden ${
+      className={`flex flex-col items-center text-center bg-white rounded-2xl drop-shadow-md overflow-hidden max-w-[240px] w-full mx-auto ${
         isHead ? "border border-red-200" : "border border-gray-300"
       }`}
     >
-      <div className="w-full h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
+      <div className="w-full aspect-[4/5] bg-gray-100 flex items-center justify-center overflow-hidden">
         <Image
           src={photoUrl}
           alt={`Photo of ${person.name}`}
-          width={300}
-          height={160}
+          width={240}
+          height={300}
           className="object-cover w-full h-full"
         />
       </div>
@@ -92,7 +92,7 @@ function GMCard({ gm }) {
   const photoUrl = getAssetUrl(gm.photo) || "/8eh-real.svg";
   return (
     <div className="flex items-center gap-5 bg-white rounded-2xl drop-shadow-md border border-gray-300 p-4 md:p-5">
-      <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-gray-100 flex-shrink-0 overflow-hidden">
+      <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-gray-100 flex-shrink-0 overflow-hidden aspect-square">
         <Image
           src={photoUrl}
           alt={`Photo of ${gm.name}`}
@@ -126,7 +126,7 @@ export default function BoardAccordionMB() {
   const branches = boardData.children || [];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="max-w-4xl mx-auto flex flex-col gap-4">
       <GMCard gm={boardData} />
 
       {branches.map((branch) => {
