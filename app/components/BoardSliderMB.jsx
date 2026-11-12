@@ -37,7 +37,7 @@ const navItems = [
         angkatan: boardData.angkatan,
         ig: boardData.ig,
         linkedin: boardData.linkedin,
-        photoUrl: getAssetUrl(boardData.photo) || "/8eh-real.svg",
+        photoUrl: getAssetUrl(boardData.photo) || "/foto-announcer/6 - Emir Muhammad.png",
       },
     ],
   },
@@ -50,7 +50,7 @@ const navItems = [
       angkatan: m.angkatan,
       ig: m.ig,
       linkedin: m.linkedin,
-      photoUrl: getAssetUrl(m.photo) || "/8eh-real.svg",
+      photoUrl: getAssetUrl(m.photo) || "/foto-announcer/6 - Emir Muhammad.png",
     })),
   })),
 ];
@@ -87,38 +87,63 @@ function BranchPill({ label, active, onClick }) {
   );
 }
 
+// Responsive half-lines for the horizontal connector:
+// each column draws its center-outward stub only when it is NOT the row edge.
+// Rows: base=2 cols, md=3 cols, lg=6 cols.
+const lineLeft = [
+  "hidden", // 0: row start at every breakpoint
+  "block", // 1
+  "hidden md:block", // 2: row start on mobile (2-col)
+  "block md:hidden lg:block", // 3: row start on md (3-col)
+  "hidden md:block", // 4: row start on mobile
+  "block", // 5
+];
+const lineRight = [
+  "block", // 0
+  "hidden md:block", // 1: row end on mobile
+  "block md:hidden lg:block", // 2: row end on md
+  "hidden md:block", // 3: row end on mobile
+  "block", // 4
+  "hidden", // 5: row end at every breakpoint
+];
+
 function StructureView({ onSelectBranch }) {
   return (
     <div className="flex flex-col items-center py-8">
       {/* GM node */}
-      <div className="px-8 py-3 bg-white rounded-2xl shadow-xs border border-zinc-200 text-center">
-        <p className="font-heading font-semibold text-base text-red-600">
+      <div className="bg-white rounded-2xl shadow-x text-center">
+        <button
+                onClick={() => onSelectBranch("gm")}
+                className="w-full min-h-[96px] flex flex-col items-center justify-center gap-1 px-3 py-3 bg-[#D83232] hover:bg-[#B72929] rounded-2xl shadow-xs border border-zinc-200 text-center cursor-pointer hover:-translate-y-0.5 hover:border-red-200 transition-all"
+              >
+        <p className="font-heading font-semibold text-base text-white">
           General Manager
         </p>
+        </button>
       </div>
 
       {/* Vertical line down from GM */}
       <div className="w-px h-6 bg-gray-300" />
 
-      {/* Horizontal line spanning the branches */}
-      <div className="relative w-full max-w-6xl">
-        <div className="h-px bg-gray-300 mx-[8.33%]" />
-
-        {/* Branch row: each column has a drop line + branch card */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 md:px-8 pb-2 -mt-px">
-          {branches.map((branch) => (
+      {/* Branch rows — horizontal connector drawn per column (exact at every breakpoint) */}
+      <div className="w-full max-w-6xl">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 md:px-8">
+          {branches.map((branch, idx) => (
             <div key={branch.id} className="flex flex-col items-center">
-              {/* Drop line to this branch (centered per column) */}
-              <div className="w-px h-6 bg-gray-300" />
+              {/* Column connector: half-line on row edges, full line in the middle */}
+              <div className="relative w-full">
+                <div className={`absolute top-0 h-px bg-gray-300 ${lineLeft[idx]} ${lineRight[idx]}`} />
+                <div className="w-px h-6 bg-gray-300 mx-auto" />
+              </div>
               <button
                 onClick={() => onSelectBranch(branch.id)}
-                className="w-full min-h-[96px] flex flex-col items-center justify-center gap-1 px-3 py-3 bg-white rounded-2xl shadow-xs border border-zinc-200 text-center cursor-pointer hover:-translate-y-0.5 hover:border-red-200 transition-all"
+                className="w-full min-h-[96px] flex flex-col items-center justify-center gap-1 px-3 py-3 bg-[#D83232] rounded-2xl shadow-xs border border-zinc-200 text-center cursor-pointer hover:-translate-y-0.5 hover:border-red-200 transition-all"
               >
-                <p className="font-heading font-semibold text-[13px] leading-snug text-red-600">
+                <p className="font-heading font-semibold text-[13px] leading-snug text-white">
                   {branch.role}
                 </p>
                 <svg
-                  className="w-3.5 h-3.5 mt-2 text-red-600"
+                  className="w-3.5 h-3.5 mt-2 text-white"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -142,7 +167,7 @@ function StructureView({ onSelectBranch }) {
 function MemberCard({ member, idx }) {
   return (
     <div className="flex flex-col items-center text-center space-y-4 w-40 sm:w-44">
-      <div className="w-36 h-36 rounded-lg bg-gray-200 flex items-center justify-center overflow-hidden">
+      <div className="w-48 h-56 rounded-lg bg-gray-200 flex items-center justify-center overflow-hidden">
         <Image
           src={member.photoUrl}
           alt={`Photo of ${member.name}`}
@@ -159,7 +184,7 @@ function MemberCard({ member, idx }) {
         </h3>
         <p className="font-body text-sm text-gray-500">{member.role}</p>
         {member.angkatan && (
-          <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold text-red-600 bg-red-50 border border-red-100 rounded-full">
+          <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-body font-semibold shadow-xs text-red-700 border border-red-700 rounded-full">
             {member.angkatan}
           </span>
         )}
@@ -214,10 +239,10 @@ function DetailView({ branchId }) {
         </h3>
       </div>
 
-      {members.length <= 8 ? (
+      {members.length <= 20 ? (
         /* Centered flex grid when everything fits on one page */
         <div className="w-full p-6 rounded-2xl">
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-10">
+          <div className="flex flex-wrap justify-center gap-x-12 gap-y-10">
             {members.map((member, idx) => (
               <MemberCard key={idx} member={member} idx={idx} />
             ))}
@@ -260,33 +285,33 @@ export default function BoardSliderMB() {
 
   return (
     <div className="w-full">
-      {/* Pill navigation */}
-      <div className="flex flex-wrap items-center justify-center gap-3 pb-2 mb-6">
+      {/* Pill navigation — only visible in detail view */}
+      <div
+        className={`flex flex-wrap items-center justify-center gap-3 pb-2 transition-all duration-300 ease-in-out ${activeBranch ? "mb-6 opacity-100" : "mb-0 opacity-0 pointer-events-none"}`}
+      >
         <div
           className={`flex items-center gap-3 overflow-x-auto transition-all duration-300 ease-in-out ${activeBranch ? "max-w-full opacity-100" : "max-w-0 opacity-0"}`}
         >
-          {activeBranch && (
-            <button
-              onClick={() => setActiveBranch(null)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-body font-medium text-sm text-white bg-[#D83232] hover:bg-[#B72929] transition-colors cursor-pointer"
-              style={pillShadow}
+          <button
+            onClick={() => setActiveBranch(null)}
+            className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-body font-medium text-sm text-white bg-[#D83232] hover:bg-[#B72929] transition-colors cursor-pointer"
+            style={pillShadow}
+          >
+            <svg
+              className="w-3.5 h-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
             >
-              <svg
-                className="w-3.5 h-3.5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              Struktur
-            </button>
-          )}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Struktur
+          </button>
         </div>
         {navItems.map((item) => (
           <BranchPill
