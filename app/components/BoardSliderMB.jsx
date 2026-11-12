@@ -125,23 +125,18 @@ function StructureView({ onSelectBranch }) {
       {/* Vertical line down from GM */}
       <div className="w-px h-6 bg-gray-300" />
 
-      {/* Branch rows — horizontal connector drawn per column (exact at every breakpoint) */}
-      <div className="w-full max-w-6xl">
+      {/* Branch rows — central spine (mobile/tablet) + per-column horizontal stubs */}
+      <div className="relative w-full max-w-6xl">
+        {/* Central vertical spine: links GM down the middle to every wrapped row's connector.
+            Hidden on lg (single row). Passes between the 2 columns on mobile, and behind
+            the middle column's cards (z-0 vs z-10) on md. Ends at the last row's connector
+            (drop 24px + card 98px = 122px above grid bottom). */}
+        <div className="absolute top-0 bottom-[122px] left-1/2 -ml-px w-px bg-gray-300 z-0 lg:hidden" />
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 md:px-8">
           {branches.map((branch, idx) => (
             <div key={branch.id} className="flex flex-col items-center">
               {/* Column connector: stubs from center; right stub extends across the grid gap */}
               <div className="relative w-full">
-                {/* Vertical risers linking wrapped rows (base: rows start at idx 2 & 4; md: idx 3).
-                    They rise from this row's connector, pass BEHIND the previous row's card
-                    (cards are z-10), and merge with the previous column's drop line.
-                    Height = row height (24 drop + 96 card) + row gap (16 base / 24 md). */}
-                {(idx === 2 || idx === 4) && (
-                  <div className="absolute bottom-full left-1/2 -ml-px w-px h-[136px] bg-gray-300 z-0 md:hidden" />
-                )}
-                {idx === 3 && (
-                  <div className="absolute bottom-full left-1/2 -ml-px w-px h-[144px] bg-gray-300 z-0 hidden md:block lg:hidden" />
-                )}
                 <div
                   className={`absolute top-0 left-0 right-1/2 h-px bg-gray-300 ${lineLeft[idx]}`}
                 />
@@ -302,42 +297,36 @@ export default function BoardSliderMB() {
     <div className="w-full">
       {/* Pill navigation — only visible in detail view; horizontal scroll on mobile */}
       <div
-        className={`flex items-center gap-3 pb-2 transition-all duration-300 ease-in-out ${activeBranch ? "mb-6 opacity-100" : "mb-0 opacity-0 pointer-events-none"}`}
+        className={`pill-scroll flex items-center gap-3 overflow-x-auto md:flex-wrap md:justify-center md:overflow-x-visible pb-2 mb-0 md:mb-0 transition-all duration-300 ease-in-out ${activeBranch ? "md:mb-6 opacity-100" : "opacity-0 pointer-events-none"}`}
       >
-        <div
-          className={`flex-shrink-0 flex items-center gap-3 transition-all duration-300 ease-in-out ${activeBranch ? "max-w-full opacity-100" : "max-w-0 opacity-0"}`}
+        <button
+          onClick={() => setActiveBranch(null)}
+          className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-body font-medium text-sm text-white bg-[#D83232] hover:bg-[#B72929] transition-colors cursor-pointer"
+          style={pillShadow}
         >
-          <button
-            onClick={() => setActiveBranch(null)}
-            className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-body font-medium text-sm text-white bg-[#D83232] hover:bg-[#B72929] transition-colors cursor-pointer"
-            style={pillShadow}
+          <svg
+            className="w-3.5 h-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
           >
-            <svg
-              className="w-3.5 h-3.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Struktur
-          </button>
-        </div>
-        <div className="pill-scroll flex items-center gap-3 overflow-x-auto md:flex-wrap md:justify-center md:overflow-x-visible pb-1 -mb-1 md:pb-0 md:mb-0">
-          {navItems.map((item) => (
-            <BranchPill
-              key={item.id}
-              label={item.label}
-              active={activeBranch === item.id}
-              onClick={() => setActiveBranch(item.id)}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 19l-7-7 7-7"
             />
-          ))}
-        </div>
+          </svg>
+          Struktur
+        </button>
+        {navItems.map((item) => (
+          <BranchPill
+            key={item.id}
+            label={item.label}
+            active={activeBranch === item.id}
+            onClick={() => setActiveBranch(item.id)}
+          />
+        ))}
       </div>
 
       {/* View container animation */}
