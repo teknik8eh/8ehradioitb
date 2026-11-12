@@ -93,8 +93,8 @@ function BranchPill({ label, active, onClick }) {
 const lineLeft = [
   "hidden", // 0: row start at every breakpoint
   "block", // 1
-  "hidden md:block", // 2: row start on mobile (2-col)
-  "block md:hidden lg:block", // 3: row start on md (3-col)
+  "hidden md:block", // 2: row start on mobile
+  "block md:hidden lg:block", // 3: row start on md
   "hidden md:block", // 4: row start on mobile
   "block", // 5
 ];
@@ -130,9 +130,14 @@ function StructureView({ onSelectBranch }) {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-2 md:px-8">
           {branches.map((branch, idx) => (
             <div key={branch.id} className="flex flex-col items-center">
-              {/* Column connector: half-line on row edges, full line in the middle */}
+              {/* Column connector: stubs from center; right stub extends across the grid gap */}
               <div className="relative w-full">
-                <div className={`absolute top-0 h-px bg-gray-300 ${lineLeft[idx]} ${lineRight[idx]}`} />
+                <div
+                  className={`absolute top-0 left-0 right-1/2 h-px bg-gray-300 ${lineLeft[idx]}`}
+                />
+                <div
+                  className={`absolute top-0 left-1/2 w-[calc(50%+1rem)] md:w-[calc(50%+1.5rem)] h-px bg-gray-300 ${lineRight[idx]}`}
+                />
                 <div className="w-px h-6 bg-gray-300 mx-auto" />
               </div>
               <button
