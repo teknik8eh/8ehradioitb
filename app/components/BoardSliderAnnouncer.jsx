@@ -5,6 +5,7 @@ import Head from "next/head";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Grid } from "swiper/modules";
 import announcerData from "@/public/data/announcers.json";
+import PersonImage from "./PersonImage";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -51,7 +52,7 @@ export default function BoardSliderAnnouncer() {
           <SwiperSlide key={idx} className="pb-8">
             <div className="flex flex-col items-center text-center space-y-4">
               <div className="w-48 h-56 rounded-2xl bg-gray-200 flex items-center justify-center overflow-hidden">
-                <Image
+                <PersonImage
                   src={member.photoUrl}
                   alt={`Photo of ${member.name}`}
                   width={144}

@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Grid } from "swiper/modules";
 import announcerData from "@/public/data/agency.json";
 import Waveform from "./Waveform"; // Import the Waveform component
+import PersonImage from "./PersonImage";
 import { getAssetUrl } from "@/lib/audioUtils";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -57,7 +58,7 @@ export default function BoardSliderAnnouncerAgency() {
           <SwiperSlide key={idx} className="pb-4">
             <div className="flex flex-col items-center text-center space-y-4 bg-white/95 backdrop-blur-sm pb-4 rounded-4xl shadow-md border border-zinc-200 min-h-[440px] mx-4 md:mx-0 overflow-hidden">
               <div className="w-full h-48 rounded-t-xl bg-gray-200 flex items-center justify-center overflow-hidden">
-                <Image
+                <PersonImage
                   src={member.photoUrl}
                   alt={`Photo of ${member.name}`}
                   width={500}

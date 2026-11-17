@@ -6,6 +6,7 @@ import Head from "next/head";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Grid } from "swiper/modules";
 import boardData from "@/public/data/management-board.json";
+import PersonImage from "./PersonImage";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -179,7 +180,7 @@ function MemberCard({ member, idx }) {
   return (
     <div className="flex flex-col items-center text-center space-y-4 w-40 sm:w-44">
       <div className="w-48 h-56 rounded-lg bg-gray-200 flex items-center justify-center overflow-hidden">
-        <Image
+        <PersonImage
           src={member.photoUrl}
           alt={`Photo of ${member.name}`}
           width={144}
