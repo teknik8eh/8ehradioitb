@@ -306,8 +306,8 @@ const GlobalAudioPlayer = () => {
   }, [applyNowPlaying]);
 
   useEffect(() => {
-    if (!realtimeEnabled) return;
-
+    // Now Playing harus realtime sejak mount — target agent <5 detik.
+    // subscribePusherChannel sudah mengatur lazy connect + authEndpoint.
     const subscription = subscribePusherChannel("now-playing");
     if (!subscription) return;
     const { channel } = subscription;
@@ -318,7 +318,7 @@ const GlobalAudioPlayer = () => {
       channel.unbind("updated", applyNowPlaying);
       unsubscribePusherChannel("now-playing");
     };
-  }, [applyNowPlaying, realtimeEnabled]);
+  }, [applyNowPlaying]);
 
   useEffect(() => {
     fetch("/api/stream-config")
