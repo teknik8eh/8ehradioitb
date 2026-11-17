@@ -37,7 +37,7 @@ const navItems = [
         angkatan: boardData.angkatan,
         ig: boardData.ig,
         linkedin: boardData.linkedin,
-        photoUrl: getAssetUrl(boardData.photo) || "/foto-announcer/6 - Emir Muhammad.png",
+        photoUrl: getAssetUrl("8eh.png") || "/foto-announcer/6 - Emir Muhammad.png",
       },
     ],
   },
@@ -50,7 +50,7 @@ const navItems = [
       angkatan: m.angkatan,
       ig: m.ig,
       linkedin: m.linkedin,
-      photoUrl: getAssetUrl(m.photo) || "/foto-announcer/6 - Emir Muhammad.png",
+      photoUrl: getAssetUrl("8eh.png") || "/foto-announcer/6 - Emir Muhammad.png",
     })),
   })),
 ];
@@ -109,7 +109,7 @@ const lineRight = [
 
 function StructureView({ onSelectBranch }) {
   return (
-    <div className="flex flex-col items-center py-8">
+    <div className="flex flex-col items-center pb-8">
       {/* GM node */}
       <div className="bg-white rounded-2xl shadow-x text-center">
         <button
@@ -194,7 +194,7 @@ function MemberCard({ member, idx }) {
         </h3>
         <p className="font-body text-sm text-gray-500">{member.role}</p>
         {member.angkatan && (
-          <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-body font-semibold shadow-xs text-red-700 border border-red-700 rounded-full">
+          <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-body font-semibold shadow-xs text-white border border-red-700 bg-red-700 rounded-full">
             {member.angkatan}
           </span>
         )}

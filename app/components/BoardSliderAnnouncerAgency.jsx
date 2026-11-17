@@ -17,8 +17,8 @@ const allMembers = announcerData.map((announcer) => ({
   role: "Announcer",
   ig: announcer.ig,
   linkedin: announcer.linkedin,
-  photoUrl: getAssetUrl(announcer.photo) || "/placeholder.jpg",
-  voiceUrl: getAssetUrl(announcer.voice) || "",
+  photoUrl: getAssetUrl("8eh.png"),
+  voiceUrl: getAssetUrl(announcer.voice) || "/voice-ann/emir.mp3",
 }));
 
 export default function BoardSliderAnnouncerAgency() {
@@ -55,7 +55,7 @@ export default function BoardSliderAnnouncerAgency() {
         `}</style>
         {allMembers.map((member, idx) => (
           <SwiperSlide key={idx} className="pb-4">
-            <div className="flex flex-col items-center text-center space-y-4 bg-white backdrop-blur-sm pb-4 rounded-3xl drop-shadow-md border border-gray-300 min-h-[440px] mx-4 md:mx-0 overflow-hidden">
+            <div className="flex flex-col items-center text-center space-y-4 bg-white/95 backdrop-blur-sm pb-4 rounded-4xl shadow-md border border-zinc-200 min-h-[440px] mx-4 md:mx-0 overflow-hidden">
               <div className="w-full h-48 rounded-t-xl bg-gray-200 flex items-center justify-center overflow-hidden">
                 <Image
                   src={member.photoUrl}
@@ -78,7 +78,7 @@ export default function BoardSliderAnnouncerAgency() {
                 )}
               </div>
 
-              <div className="flex-grow flex flex-col justify-center">
+              <div className="flex-grow flex flex-col justify-center mx-4">
                 <h3 className="font-heading font-semibold text-xl text-gray-900 mt-0">
                   {member.name}
                 </h3>

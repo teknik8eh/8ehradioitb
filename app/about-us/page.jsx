@@ -22,6 +22,7 @@ const discoverCards = [
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
+          strokeWidth={2}
           d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
         />
       </svg>
@@ -268,7 +269,7 @@ export default function AboutUs() {
             Management Board
           </h2>
 
-          <p className="text-center font-semibold max-w-2xl mx-auto mb-16 text-gray-600 font-body">
+          <p className="text-center font-semibold max-w-2xl mx-auto mb-4 text-gray-600 font-body">
             Temui para personel keren dibalik 8EH Radio ITB
           </p>
 
@@ -278,25 +279,27 @@ export default function AboutUs() {
       </section>
 
       {/* Discover Section */}
-      <section className="relative py-32 bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 overflow-hidden">
-        {/* Background decorative elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 opacity-20">
-          <div className="w-full h-full bg-gradient-to-bl from-orange-400 to-red-400 rounded-full blur-3xl"></div>
-        </div>
-        <div className="absolute bottom-0 left-0 w-72 h-72 opacity-15">
-          <div className="w-full h-full bg-gradient-to-tr from-yellow-400 to-orange-400 rounded-full blur-3xl"></div>
-        </div>
-
+      <section className="relative py-32 bg-linear-to-t from-white via-red-50 to-yellow-100 overflow-hidden">
+        
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="absolute w-full max-w-lg mx-auto -top-20 -right-40 -z-10">
+                <Image
+                  src="/vstock-3.png"
+                  alt="About Us"
+                  width={395}
+                  height={395}
+                  className="object-contain"
+                />
+              </div>
           {/* Section Header */}
           <div className="text-center mb-16">
-            <h2 className="text-5xl md:text-6xl font-accent text-gray-900 mb-6 leading-tight">
+            <h2 className="text-5xl md:text-6xl font-accent font-semibold text-gray-900 mb-6 leading-tight">
               Discover the vibrant world of{" "}
               <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
                 8EH Radio ITB
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg font-body text-gray-600 max-w-3xl mx-auto">
               Dari konten kreatif hingga siaran interaktif, temukan berbagai
               program menarik yang kami tawarkan
             </p>
@@ -307,15 +310,15 @@ export default function AboutUs() {
             {discoverCards.map((card, idx) => (
               <div
                 key={idx}
-                className="group relative bg-white/60 backdrop-blur-md rounded-2xl p-8 transition-all duration-300 hover:-translate-y-2 border border-gray-200/80 shadow-lg hover:shadow-xl"
+                className="group relative bg-linear-to-b from-[#FEF9E7] to-[#F5E6A3] backdrop-blur-md rounded-4xl p-8 transition-all duration-300 border border-zinc-200/80 shadow-sm hover:shadow-md"
               >
                 <div className="mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center shadow-md">
+                  <div className="w-16 h-16 bg-gradient-to-br from-red-700 to-orange-600 rounded-full flex items-center justify-center shadow-md">
                     {card.icon}
                   </div>
                 </div>
 
-                <h3 className="text-2xl font-heading font-bold text-gray-900 mb-4 group-hover:text-red-600 transition-colors">
+                <h3 className="text-2xl font-heading font-bold text-gray-900 mb-4 group-hover:text-red-700 transition-colors">
                   {card.title}
                 </h3>
                 <p className="text-gray-600 font-body leading-relaxed">
@@ -339,7 +342,7 @@ export default function AboutUs() {
           />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-5xl md:text-6xl font-heading text-gray-900 mb-4">
+          <h2 className="text-5xl md:text-6xl font-accent font-semibold text-gray-900 mb-4">
             Student Voices
           </h2>
 
@@ -349,13 +352,13 @@ export default function AboutUs() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {[
-              {
-                quote:
-                  '"8EH Radio ITB is my go-to podcasts and articles to accompany me during campus life!"',
-                name: "Nicholas Andhika Lucas",
-                role: "Students, ITB",
-                image: "/lucas.jpg",
-              },
+              // {
+              //   quote:
+              //     '"8EH Radio ITB is my go-to podcasts and articles to accompany me during campus life!"',
+              //   name: "Nicholas Andhika Lucas",
+              //   role: "Students, ITB",
+              //   image: "/lucas.jpg",
+              // },
               {
                 quote:
                   '"8EH Radio ITB has enriched our campus culture and provided invaluable experiences for students."',
@@ -414,7 +417,7 @@ export default function AboutUs() {
       {/* Get in Touch Section */}
       <section className="relative py-24 bg-gradient-to-b from-white via-yellow-100 to-orange-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-5xl md:text-6xl font-heading text-gray-900 mb-4">
+          <h2 className="font-serif text-5xl md:text-6xl text-gray-800 tracking-tight mb-4">
             Get in Touch
           </h2>
 
@@ -524,7 +527,7 @@ export default function AboutUs() {
           </div>
 
           {/* Google Maps iframe */}
-          <div className="relative rounded-3xl overflow-hidden h-150 w-full mt-10">
+          <div className="relative rounded-3xl overflow-hidden h-100 w-full mt-10">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63374.86072097309!2d107.53145050717926!3d-6.89911962316508!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e6578d4253e7%3A0x136b7b51bcb1002d!2sSunken%20Court%2C%20ITB!5e0!3m2!1sid!2sid!4v1751814179388!5m2!1sid!2sid"
               width="600"

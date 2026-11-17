@@ -94,7 +94,7 @@ const FaqItem = ({ faq, isOpen, onToggle }) => {
 const FAQHero = () => {
   return (
     // Section utama dengan padding, latar belakang, dan positioning relatif untuk elemen dekoratif
-    <section className="relative w-full bg-gradient-to-b from-white via-yellow-200/90 to-white py-24 px-4 sm:px-8 lg:px-16 overflow-hidden">
+    <section className="relative w-full bg-gradient-to-b from-white via-yellow-200/90 to-white py-24 px-4 sm:px-8 lg:px-36 overflow-hidden">
       {/* Elemen Dekoratif di Latar Belakang */}
       <div className="absolute inset-0 z-0">
         {/* Bentuk Abstrak/Halftone */}
@@ -121,7 +121,7 @@ const FAQHero = () => {
           <h1 className="font-accent text-6xl md:text-7xl font-medium text-gray-800 mb-6">
             Your Questions Answered
           </h1>
-          <p className="text-lg font-heading font-medium text-gray-800 mx-auto md:mx-0 mb-8">
+          <p className="text-md font-body text-gray-800 mx-auto md:mx-0 mb-8">
             Punya pertanyaan seputar 8EH Radio ITB? Jelajahi halaman FAQ kami dan temukan jawabannya.
           </p>
         </div>
@@ -213,7 +213,7 @@ const FaqSection = () => {
       </div>
 
       {/* Kontainer Utama FAQ dengan Paginasi */}
-      <div className="relative z-10 mx-auto mt-12 max-w-4xl rounded-4xl bg-gradient-to-t from-yellow-300/50 to-orange-300/40 p-6 shadow-xl backdrop-blur-sm sm:px-10 py-6">
+      <div className="relative z-10 mx-auto mt-12 max-w-4xl rounded-4xl bg-gradient-to-t from-[#FEF9E7] to-[#F5E6A3] border border-zinc-200 p-6 shadow-md backdrop-blur-sm sm:px-10 py-6">
         {/* Wrapper untuk animasi fade */}
         <div
           className={`transition-opacity duration-300 ${

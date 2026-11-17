@@ -17,7 +17,7 @@ const members = announcerData.map((announcer) => ({
   role: "Announcer",
   ig: announcer.ig,
   linkedin: announcer.linkedin,
-  photoUrl: getAssetUrl(announcer.photo) || "/8eh-real.svg",
+  photoUrl: getAssetUrl("8eh.png"),
 }));
 
 export default function BoardSliderAnnouncer() {
@@ -50,7 +50,7 @@ export default function BoardSliderAnnouncer() {
         {members.map((member, idx) => (
           <SwiperSlide key={idx} className="pb-8">
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-36 h-36 rounded-lg bg-gray-200 flex items-center justify-center overflow-hidden">
+              <div className="w-48 h-56 rounded-2xl bg-gray-200 flex items-center justify-center overflow-hidden">
                 <Image
                   src={member.photoUrl}
                   alt={`Photo of ${member.name}`}
