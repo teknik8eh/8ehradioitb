@@ -17,8 +17,8 @@ const allMembers = announcerData.map((announcer) => ({
   role: "Announcer",
   ig: announcer.ig,
   linkedin: announcer.linkedin,
-  photoUrl: getAssetUrl("8eh.png"),
-  voiceUrl: getAssetUrl(announcer.voice) || "/voice-ann/emir.mp3",
+  photoUrl: getAssetUrl(announcer.photo) || getAssetUrl("8eh.png"),
+  voiceUrl: getAssetUrl(announcer.voice),
 }));
 
 export default function BoardSliderAnnouncerAgency() {

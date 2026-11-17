@@ -37,7 +37,8 @@ const navItems = [
         angkatan: boardData.angkatan,
         ig: boardData.ig,
         linkedin: boardData.linkedin,
-        photoUrl: getAssetUrl("8eh.png") || "/foto-announcer/6 - Emir Muhammad.png",
+        photoUrl:
+          getAssetUrl(boardData.photo) || getAssetUrl("8eh.png"),
       },
     ],
   },
@@ -50,7 +51,7 @@ const navItems = [
       angkatan: m.angkatan,
       ig: m.ig,
       linkedin: m.linkedin,
-      photoUrl: getAssetUrl("8eh.png") || "/foto-announcer/6 - Emir Muhammad.png",
+      photoUrl: getAssetUrl(m.photo) || getAssetUrl("8eh.png"),
     })),
   })),
 ];
