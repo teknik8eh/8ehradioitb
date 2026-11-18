@@ -7,6 +7,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { hasAnyRole } from "@/lib/roleUtils";
 
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getMediaUrl } from "@/lib/mediaUrl";
 
 const R2_ENDPOINT = process.env.R2_ENDPOINT;
 const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;
@@ -66,8 +67,8 @@ export async function POST(req) {
         date: date || undefined,
         duration: duration || undefined,
         audioUrl: audioKey,
-        image: image || (coverImageKey ? `/api/proxy-audio?key=${coverImageKey}` : undefined),
-        coverImage: coverImageKey ? `/api/proxy-audio?key=${coverImageKey}` : undefined,
+        image: image || (coverImageKey ? getMediaUrl(coverImageKey) : undefined),
+        coverImage: coverImageKey ? getMediaUrl(coverImageKey) : undefined,
         authorId: session.user.id,
       },
     });
