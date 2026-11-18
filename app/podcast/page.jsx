@@ -197,7 +197,7 @@ const PodcastEpisodes = () => {
   };
 
   return (
-    <section className="pt-24 bg-gradient-to-b from-black/0 from-0% to-black to-5% md:to-15% text-white relative overflow-hidden" id="podcast-programs">
+    <section className="pt-24 bg-linear-to-b from-[#FEFBF8] from-0% to-black to-5% md:to-35% text-white relative overflow-hidden" id="podcast-programs">
       <div className="absolute top-0 md:top-1/3 right-0 md:right-0 w-100 md:w-180 opacity-20 -rotate-17">
         <Image
           src="/boombox-podcast.png"

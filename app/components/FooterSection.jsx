@@ -100,7 +100,7 @@ export default function FooterSection() {
           </div>
 
           {/* Links Grid */}
-          <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8 font-geist-sans">
             <div>
               <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
                 Pages

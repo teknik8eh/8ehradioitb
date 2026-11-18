@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import { FiMessageCircle, FiMusic } from "react-icons/fi";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 
@@ -140,6 +141,9 @@ const GlobalAudioPlayer = () => {
   const [isLiveActive, setIsLiveActive] = useState(null); // null=loading, true/false
   const [realtimeEnabled, setRealtimeEnabled] = useState(false);
   const showLiveChatRef = useRef(showLiveChat);
+  // ponytail: on-air hanya mengubah VISIBILITAS player, tidak pernah menyentuh
+  // isPlaying/volume — level audio user tidak diganggu.
+  const onAirRef = useRef(false);
 
   useEffect(() => {
     showLiveChatRef.current = showLiveChat;
@@ -328,8 +332,27 @@ const GlobalAudioPlayer = () => {
           liveChatEnabled: data?.liveChatEnabled !== false,
           songRequestEnabled: data?.songRequestEnabled !== false,
         });
+        // ponytail: fetch ini cuma sekali di mount — kalau status on-air berubah
+        // sebelum user memicu realtimeEnabled, event onAirChanged belum langganan
+        // dan player tidak akan muncul. Ceiling: subscribe channel 'live-status'
+        // tanpa syarat, atau polling, kalau itu jadi masalah nyata.
+        onAirRef.current = data?.onAir === true;
+        if (onAirRef.current) setShowPlayer(true);
       })
       .catch(() => {});
+  }, []);
+
+  // ponytail: live-started/live-ended lewat event onAirChanged juga memunculkan
+  // player. off-air sengaja TIDAK auto-hide (tidak diminta) — hide tetap lewat
+  // jalur yang sudah ada (pause podcast). Upgrade: setShowPlayer(false) di
+  // else-branch jika suatu saat auto-hide saat off-air diinginkan.
+  useEffect(() => {
+    const handler = (e) => {
+      onAirRef.current = Boolean(e.detail?.onAir);
+      if (onAirRef.current) setShowPlayer(true);
+    };
+    window.addEventListener("onAirChanged", handler);
+    return () => window.removeEventListener("onAirChanged", handler);
   }, []);
 
  useEffect(() => {
@@ -347,7 +370,9 @@ const GlobalAudioPlayer = () => {
   window.addEventListener("audioStateChanged", handler);
   const handlePodcastPlay = () => {
     setIsPlaying(false);
-    setShowPlayer(false);
+    // ponytail: saat on-air player tetap tampil meski user play podcast
+    // (permintaan: selalu tampil saat on air); off-air tetap sembunyi seperti lama.
+    if (!onAirRef.current) setShowPlayer(false);
     externalPause = true;
     window.dispatchEvent(new CustomEvent("pauseRequested"));
   };
@@ -497,7 +522,12 @@ const GlobalAudioPlayer = () => {
     sendMessage(text, guestName);
   };
 
-  const isVisible = showPlayer;
+  // ponytail: hide di dashboard — audio keep playing (tidak diminta stop),
+  // player UI saja yang hilang. usePathname reaktif di kedua arah navigasi.
+  const pathname = usePathname();
+  const isDashboard = Boolean(pathname?.startsWith("/dashboard"));
+
+  const isVisible = showPlayer && !isDashboard;
 
   return (
     <>
@@ -577,8 +607,8 @@ const GlobalAudioPlayer = () => {
             </div>
           )}
 
-          <div className="bg-white shadow-2xl border border-gray-200/80">
-            <div className="max-w-full mx-auto px-2 md:px-6 lg:px-60 py-1 md:py-2 flex flex-col md:grid md:grid-cols-[minmax(0,18rem)_minmax(16rem,1fr)_minmax(0,18rem)] items-center gap-2 md:gap-4">
+          <div className="bg-white/95 backdrop-blur-md shadow-md border border-zinc-200/80 w-11/12 md:w-2/3 mx-auto rounded-full mb-1">
+            <div className="max-w-full mx-auto pl-2 pr-4 py-1 md:py-2 flex flex-col md:grid md:grid-cols-[minmax(0,18rem)_minmax(16rem,1fr)_minmax(0,18rem)] items-center gap-2 md:gap-4">
               <div className="flex items-center gap-3 w-full min-w-0">
                 <button onClick={togglePlay} className="md:hidden w-8 h-8 rounded-full ring-1 ring-gray-300 hover:ring-gray-900 text-gray-800 flex items-center justify-center text-xl transition-all flex-shrink-0">
                   {isPlaying ? (
@@ -587,7 +617,7 @@ const GlobalAudioPlayer = () => {
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M8 5v14l11-7z"></path></svg>
                   )}
                 </button>
-                <div className="w-10 h-10 md:w-14 md:h-14 bg-gray-200 rounded-md relative overflow-hidden shadow-sm flex-shrink-0">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-gray-200 rounded-full relative overflow-hidden shadow-sm flex-shrink-0">
                   <img src={playerConfig.coverImage || "/8eh.png"} alt="cover" className="object-cover w-full h-full absolute inset-0" />
                 </div>
                 <div className="text-sm min-w-0 flex-1">
@@ -636,7 +666,7 @@ const GlobalAudioPlayer = () => {
                 </div>
               </div>
 
-              <div className="hidden md:flex items-center gap-3 min-w-0 justify-end">
+              <div className="hidden md:flex items-center gap-3 min-w-0 justify-center">
                 <button type="button" onClick={handleMuteToggle} className="text-gray-600 focus:outline-none cursor-pointer">
                   {isMuted || volume === 0 ? (
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">

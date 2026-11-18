@@ -12,7 +12,7 @@ const rateCardData = {
     {
       title: "Paket Pop",
       price: "FREE!",
-      gradient: "from-orange-600 via-yellow-500/80 to-yellow-100/30",
+      gradient: "from-[#ffeebb] to-[#ffbf00b7]",
       features: [
         "1x Iklan (video/poster) di feeds IG @8ehradioitb (5 hari)",
         "1x Iklan di story IG @8ehradioitb",
@@ -23,7 +23,7 @@ const rateCardData = {
     {
       title: "Paket Hip Hop",
       price: "30K",
-      gradient: "from-orange-600 via-yellow-500/80 to-yellow-100/30",
+      gradient: "from-[#ffeebb] to-[#ffbf00b7]",
       features: [
         "1x Iklan (video/poster) di feeds IG @8ehradioitb (tayang 5 hari)",
         "2x Iklan di story IG @8ehradioitb",
@@ -34,7 +34,7 @@ const rateCardData = {
     {
       title: "Paket Classic",
       price: "50K",
-      gradient: "from-orange-600 via-yellow-500/80 to-yellow-100/30",
+      gradient: "from-[#ffeebb] to-[#ffbf00b7]",
       features: [
         "1x Iklan (video/poster) di feeds IG @8ehradioitb (7 hari)",
         "2x Iklan di story IG @8ehradioitb",
@@ -47,7 +47,7 @@ const rateCardData = {
     {
       title: "Paket Jazz",
       price: "75K",
-      gradient: "from-orange-600 via-yellow-500/80 to-yellow-100/30",
+      gradient: "from-[#ffeebb] to-[#ffbf00b7]",
       features: [
         "5x Iklan (video/poster) di IG @8ehradioitb & @reporter8eh (7 hari, max 1x/minggu)",
         "7x Iklan di story IG @8ehradioitb & @reporter8eh (max 1x/minggu)",
@@ -62,7 +62,7 @@ const rateCardData = {
     {
       title: "Paket Rock",
       price: "100K",
-      gradient: "from-orange-600 via-yellow-500/80 to-yellow-100/30",
+      gradient: "from-[#ffeebb] to-[#ffbf00b7]",
       features: [
         "1x Iklan (video/poster) di feeds IG @8ehradioitb (10 hari)",
         "3x Iklan di story IG @8ehradioitb (video/poster)",
@@ -78,7 +78,7 @@ const rateCardData = {
     {
       title: "1 Month Package",
       price: "200K",
-      gradient: "from-orange-600 via-yellow-500/80 to-yellow-100/30",
+      gradient: "from-[#ffeebb] to-[#ffbf00b7]",
       features: [
         "2x Iklan (video/poster) di IG @8ehradioitb dan @reporter8eh (5 hari, max 1x/minggu)",
         "4x Iklan di story IG @8ehradioitb dan @reporter8eh (max 1x/minggu)",
@@ -92,7 +92,7 @@ const rateCardData = {
     {
       title: "3 Months Package",
       price: "300K",
-      gradient: "from-orange-600 via-yellow-500/80 to-yellow-100/30",
+      gradient: "from-[#ffeebb] to-[#ffbf00b7]",
       features: [
         "3x Iklan (video/poster) di IG @8ehradioitb (7 hari, max 1x/minggu)",
         "3x Iklan (video/poster) di IG @reporter8eh (5 hari, max 1x/minggu)",
@@ -109,7 +109,7 @@ const rateCardData = {
     {
       title: "6 Months Package",
       price: "400K",
-      gradient: "from-orange-600 via-yellow-500/80 to-yellow-100/30",
+      gradient: "from-[#ffeebb] to-[#ffbf00b7]",
       features: [
         "5x Iklan (video/poster) di IG @8ehradioitb (7 hari, max 1x/minggu)",
         "5x Iklan (video/poster) di IG @reporter8eh (7 hari, max 1x/minggu)",
@@ -226,7 +226,7 @@ const MedpartHero = () => {
         alt="Telephone Illustration"
         width={600}
         height={600}
-        className="absolute top-[5%] md:top-[20%] left-0 md:left-1/2 md:-translate-x-[220%] pointer-events-none select-none z-0 w-30 md:w-80"
+        className="absolute top-[5%] md:top-[20%] left-0 pointer-events-none select-none z-0 w-30 md:w-80"
         priority
       />
       <Image
@@ -269,13 +269,13 @@ const MedpartHero = () => {
 
 const OfferedService = () => {
   return (
-    <section className="relative pt-40 bg-gradient-to-b from-yellow-200 to-white overflow-hidden">
+    <section className="relative pt-40 bg-gradient-to-b from-yellow-200 to-[#FEFBF8] overflow-hidden">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
         <div className="mb-8">
           <h1 className="text-6xl font-accent text-black">Offered Services</h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 justify-content-center lg:w-full mx-auto">
-          <div className="bg-gradient-to-br from-orange-600/80 via-yellow-500/50 to-yellow-100/30 transition-all duration-300 border hover:border-gray-300 border-gray-200/80 rounded-4xl md:shadow-xl px-10 py-6 mb-4 md:px-16 grid md:grid-cols-1 gap-8 items-center backdrop-blur-xs">
+          <div className="bg-gradient-to-br from-[#ffeebb] to-[#ffbf00b7] transition-all duration-300 border hover:border-zinc-300 border-zinc-200/80 rounded-4xl md:shadow-md px-10 py-6 mb-4 md:px-16 grid md:grid-cols-1 gap-8 items-center backdrop-blur-xs">
             <div className="grid grid-cols-1 gap-x-12 gap-y-6 justify-content-center lg:w-full mx-auto">
               <div className="grid grid-cols-6 items-start space-x-4">
                 <Image
@@ -313,7 +313,7 @@ const OfferedService = () => {
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-orange-600/80 via-yellow-500/50 to-yellow-100/30 transition-all duration-300 border hover:border-gray-300 border-gray-200/80 rounded-4xl md:shadow-xl px-10 py-6 mb-4 md:px-16 grid md:grid-cols-1 gap-8 items-center backdrop-blur-xs">
+          <div className="bg-gradient-to-br from-[#ffeebb] to-[#ffbf00b7] transition-all duration-300 border hover:border-zinc-300 border-zinc-200/80 rounded-4xl md:shadow-md px-10 py-6 mb-4 md:px-16 grid md:grid-cols-1 gap-8 items-center backdrop-blur-xs">
             <div className="grid grid-cols-1 gap-x-12 gap-y-6 justify-content-center lg:w-full mx-auto">
               <div className="grid grid-cols-6 items-start space-x-4">
                 <Image
@@ -362,7 +362,7 @@ function RateCard() {
   const currentPlans = rateCardData[activeTerm];
 
   return (
-    <section className="bg-slate-100 py-20 px-4 relative mt-12">
+    <section className="bg-[#FEFBF8] py-20 px-4 relative mt-12">
       <div className="absolute top-10 left-0 md:left-1/2 opacity-80 md:-translate-x-[100%] w-30 md:w-90">
         <Image
           src="/vstock-medpart-2.png"
@@ -425,7 +425,7 @@ function RateCard() {
           {currentPlans.map((plan, index) => (
             <div
               key={index}
-              className={`rounded-4xl p-8 text-black flex flex-col shadow-md border border-gray-300 backdrop-blur-md transform hover:scale-101 transition-transform duration-300 bg-gradient-to-br ${plan.gradient} max-w-xs`} // max-w-xs digunakan untuk lebar maksimal 20rem (320px)
+              className={`rounded-4xl p-8 text-black flex flex-col shadow-sm border border-zinc-300 backdrop-blur-md transform hover:scale-101 transition-transform duration-300 bg-linear-to-b ${plan.gradient} max-w-xs`} // max-w-xs digunakan untuk lebar maksimal 20rem (320px)
             >
               <h3 className="text-2xl font-heading mb-2 text-center">
                 {plan.title}
@@ -536,7 +536,7 @@ const ProsedurSection = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-12">
         {/* Kolom Kiri: Daftar Isi (Table of Contents) */}
         <aside className="lg:col-span-1">
-          <div className="sticky top-24 bg-gray-300/60 backdrop-blur-sm text-black rounded-2xl shadow-lg">
+          <div className="sticky top-24 bg-gray-200/60 backdrop-blur-sm text-black rounded-3xl shadow-lg">
             {/* <h3 className="text-xl font-bold mb-4">Terms and Condition</h3> */}
             <ul className="space-y-[0.5px]">
               {procedureData.map((item) => (
@@ -564,7 +564,7 @@ const ProsedurSection = () => {
 
         {/* Kolom Kanan: Konten Prosedur */}
         <main className="lg:col-span-3">
-          <div className="bg-white/50 backdrop-blur-sm p-8 sm:p-12 rounded-4xl shadow-lg z-20 relative">
+          <div className="bg-white/50 border border-zinc-200 backdrop-blur-sm p-8 sm:p-12 rounded-4xl shadow-md z-20 relative">
             <div className="space-y-12">
               {/* Filter agar judul tanpa konten tidak dirender di sini */}
               {procedureData
@@ -609,12 +609,12 @@ const PartnerMarquee = () => {
         - md:flex-row di desktop
         - md:h-24 untuk tinggi spesifik di desktop
       */}
-      <div className="flex w-full flex-col items-center overflow-hidden rounded-3xl bg-gradient-to-r from-orange-500 to-yellow-400 shadow-lg md:flex-row md:h-24">
+      <div className="flex w-full flex-col items-center overflow-hidden rounded-full bg-gradient-to-r from-orange-500 to-yellow-400 shadow-md md:flex-row md:h-24 border border-zinc-200">
         {/* 2. Bagian Teks Statis:
           - Padding dan perataan teks diatur untuk mobile dan desktop
         */}
         <div className="flex-shrink-0 p-6 text-center md:p-8 md:text-left md:w-1/4">
-          <p className="text-sm font-semibold text-black">
+          <p className="text-sm font-body font-semibold text-black">
             8EH Radio ITB telah menjalin kolaborasi dengan berbagai institusi
             dan mitra
           </p>
@@ -651,131 +651,131 @@ const PartnerMarquee = () => {
 const GetInTouch = () => {
   return (
     <section className="relative py-24 bg-gradient-to-b from-white via-yellow-100 to-orange-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-5xl md:text-6xl font-heading text-gray-900 mb-4">
-          Get in Touch
-        </h2>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="font-serif text-5xl md:text-6xl text-gray-800 tracking-tight mb-4">
+            Get in Touch
+          </h2>
 
-        <p className="font-body text-gray-600 mb-16">
-          Kami ingin mendengar kabar darimu! Hubungi kami untuk pertanyaan,
-          saran, atau kolaborasi lebih lanjut.
-        </p>
+          <p className="font-body text-gray-600 mb-16">
+            We'd love to hear from you! Reach out for inquiries or
+            collaborations.
+          </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          {/* Contact details */}
-          <div className="space-y-8">
-            <div className="flex items-start space-x-4">
-              <div className="w-6 h-6 mt-1 flex-shrink-0 text-gray-600">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Contact details */}
+            <div className="space-y-8">
+              <div className="flex items-start space-x-4">
+                <div className="w-6 h-6 mt-1 flex-shrink-0 text-gray-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-body font-bold text-lg text-gray-900 mb-1">
+                    Email
+                  </h3>
+                  <a
+                    href="mailto:8eh_itb@km.itb.ac.id"
+                    className="font-body text-gray-700 hover:underline"
+                  >
+                    8eh_itb@km.itb.ac.id
+                  </a>
+                </div>
               </div>
-              <div>
-                <h3 className="font-body font-bold text-lg text-gray-900 mb-1">
-                  Email
-                </h3>
-                <a
-                  href="mailto:8eh_itb@km.itb.ac.id"
-                  className="font-body text-gray-700 hover:underline"
-                >
-                  8eh_itb@km.itb.ac.id
-                </a>
-              </div>
-            </div>
 
-            <div className="flex items-start space-x-4">
-              <div className="w-6 h-6 mt-1 flex-shrink-0 text-gray-600">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                  />
-                </svg>
+              <div className="flex items-start space-x-4">
+                <div className="w-6 h-6 mt-1 flex-shrink-0 text-gray-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-body font-bold text-lg text-gray-900 mb-1">
+                    Phone
+                  </h3>
+                  <a
+                    href="https://wa.me/6281584225370"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-body text-gray-700 hover:underline"
+                  >
+                    +62 815 8422 5370
+                  </a>
+                </div>
               </div>
-              <div>
-                <h3 className="font-body font-bold text-lg text-gray-900 mb-1">
-                  Phone
-                </h3>
-                <a
-                  href="https://wa.me/6281584225370"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-body text-gray-700 hover:underline"
-                >
-                  +62 815 8422 5370
-                </a>
-              </div>
-            </div>
 
-            <div className="flex items-start space-x-4">
-              <div className="w-6 h-6 mt-1 flex-shrink-0 text-gray-600">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-body font-bold text-lg text-gray-900 mb-1">
-                  Office
-                </h3>
-                <p className="font-body text-gray-700">
-                  Jl. Ganesha No. 10, Bandung, Indonesia
-                </p>
+              <div className="flex items-start space-x-4">
+                <div className="w-6 h-6 mt-1 flex-shrink-0 text-gray-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-body font-bold text-lg text-gray-900 mb-1">
+                    Office
+                  </h3>
+                  <p className="font-body text-gray-700">
+                    Jl. Ganesha No. 10, Bandung, Indonesia
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Google Maps iframe */}
-        <div className="relative rounded-3xl overflow-hidden h-150 w-full mt-10">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63374.86072097309!2d107.53145050717926!3d-6.89911962316508!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e6578d4253e7%3A0x136b7b51bcb1002d!2sSunken%20Court%2C%20ITB!5e0!3m2!1sid!2sid!4v1751814179388!5m2!1sid!2sid"
-            width="600"
-            height="450"
-            style={{ border: 0 }}
-            allowFullScreen=""
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className="absolute inset-0 w-full h-full"
-          ></iframe>
+          {/* Google Maps iframe */}
+          <div className="relative rounded-3xl overflow-hidden h-100 w-full mt-10">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63374.86072097309!2d107.53145050717926!3d-6.89911962316508!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e6578d4253e7%3A0x136b7b51bcb1002d!2sSunken%20Court%2C%20ITB!5e0!3m2!1sid!2sid!4v1751814179388!5m2!1sid!2sid"
+              width="600"
+              height="450"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="absolute inset-0 w-full h-full"
+            ></iframe>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
   );
 };
 

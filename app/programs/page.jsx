@@ -330,7 +330,7 @@ const HighlightsSection = () => {
       <div className="relative container mx-auto px-12">
         {/* Judul "Program Highlights" */}
         <div className="flex justify-center mb-12">
-          <h2 className="bg-gradient-to-br backdrop-blur-xs drop-shadow-md from-yellow-500/80 via-orange-400/70 to-white/60 text-black text-center font-accent text-4xl lg:text-5xl px-4 lg:px-12 py-3 rounded-xl shadow-lg">
+          <h2 className=" backdrop-blur-xs drop-shadow-md from-yellow-500/80 via-orange-400/70 to-white/60 text-white text-center font-accent text-4xl lg:text-5xl px-4 py-3 rounded-3xl shadow-lg">
             Featured Programs
           </h2>
         </div>
@@ -418,7 +418,7 @@ const YoutubeCTA = () => {
 
 export default function Home() {
   return (
-    <main className="bg-[#FFF6F4] overflow-x-hidden font-sans">
+    <main className="bg-[#FEFBF8] overflow-x-hidden font-sans">
       <Navbar />
       <ProgramHero />
       <PodcastSection />

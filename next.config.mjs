@@ -31,6 +31,12 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "assets.8ehradioitb.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "6c21e985daefe5304355967630578570.r2.cloudflarestorage.com",
         port: "",
         pathname: "/**",
