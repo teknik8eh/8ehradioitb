@@ -95,7 +95,7 @@ export default function BoardSliderAnnouncer() {
                 )}
                 {(member.ig && (
                   <a
-                    href={`https://instagram.com/${member.ig}`}
+                    href={`${member.ig}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-6 h-6 text-gray-500 hover:text-gray-800 transition-colors"

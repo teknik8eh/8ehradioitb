@@ -121,7 +121,7 @@ export default function ProgramsSlider({ title, subtitle, programs }) {
           {programs.map((program, index) => (
             <SwiperSlide key={index}>
               {/* <Link href={program.link}> */}
-              <div className="bg-linear-to-b backdrop-blur-xs from-[#FEF9E7] to-[#F5E6A3] rounded-3xl px-8 pt-8 md:pt-8 pb-8 shadow-md flex flex-col justify-between overflow-hidden transition-all duration-300 border hover:border-zinc-300 border-zinc-200/80">
+              <div className="min-h-85 sm:min-h-0 bg-linear-to-b backdrop-blur-xs from-[#FEF9E7] to-[#F5E6A3] rounded-3xl px-8 pt-8 md:pt-8 pb-8 shadow-md flex flex-col justify-between overflow-hidden transition-all duration-300 border hover:border-zinc-300 border-zinc-200/80">
                 <div className="flex flex-wrap items-center justify-center">
                   <div className="flex mb-4 w-full lg:h-32 justify-center">
                     <Image

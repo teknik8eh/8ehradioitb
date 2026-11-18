@@ -119,7 +119,7 @@
       "angkatan": "MT'24",
       "ig": "",
       "linkedin": "",
-      "photo": "management-board/kresensia.jpg",
+      "photo": "management-board/kresensia.png",
       "children": [
         {
           "id": "vice-rnd",
@@ -220,9 +220,9 @@
           "role": "Technic Manager",
           "name": "Emir Muhammad F.",
           "angkatan": "II'24",
-          "ig": "",
-          "linkedin": "",
-          "photo": "management-board/emir (2).JPG",
+          "ig": "https://www.instagram.com/emirmf_",
+          "linkedin": "https://www.linkedin.com/in/emirmf",
+          "photo": "management-board/emir.jpg",
           "children": [
             {
               "id": "vice-technic-manager",
@@ -250,11 +250,11 @@
         {
           "id": "vice-station-director",
           "role": "Vice Station Director",
-          "name": "Juliana Aninditya",
+          "name": "Juliene Aninditya",
           "angkatan": "PL'24",
           "ig": "",
           "linkedin": "",
-          "photo": "management-board/juliana.jpg",
+          "photo": "management-board/juliene.jpg",
           "children": []
         },
         {
@@ -343,11 +343,11 @@
             {
               "id": "vice-partnership-manager",
               "role": "Vice Partnership Manager",
-              "name": "Nadira Zahra Adinda E. P.",
+              "name": "Nadiva Zahra Adinda E. P.",
               "angkatan": "TK'24",
               "ig": "",
               "linkedin": "",
-              "photo": "management-board/nadira.jpg",
+              "photo": "management-board/nadiva.jpg",
               "children": []
             }
           ]

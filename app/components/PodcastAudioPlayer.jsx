@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import ButtonPrimary from "./ButtonPrimary";
 import { useGlobalAudio } from "@/app/hooks/useGlobalAudio"; // Import hook yang baru kita buat
 
 const PodcastAudioPlayer = ({
@@ -188,7 +189,7 @@ const PodcastAudioPlayer = ({
         onClick={toggleMobileExpanded}
       >
         <div 
-          className={`absolute bottom-0 left-0 right-0 mb-4 bg-white rounded-t-3xl p-6 transition-all duration-300 ease-out ${
+          className={`absolute bottom-0 left-0 right-0 mb-4 bg-white rounded-t-4xl p-6 transition-all duration-300 ease-out ${
             showMobileExpanded 
               ? 'translate-y-0 opacity-100' 
               : 'translate-y-full opacity-0'
@@ -238,7 +239,7 @@ const PodcastAudioPlayer = ({
                     step={0.1}
                     value={progress}
                     onChange={handleSeek}
-                    className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer"
+                    className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer accent-red-700"
                     style={{
                       background: `linear-gradient(to right, #EA4A30 0%, #EA4A30 ${(progress / (duration || 1)) * 100}%, #e5e7eb ${(progress / (duration || 1)) * 100}%, #e5e7eb 100%)`
                     }}
@@ -258,9 +259,10 @@ const PodcastAudioPlayer = ({
                 <img src="/fb.svg" alt="Skip backward" className="w-6 h-6" />
               </button>
               
-              <button
+              <ButtonPrimary
                 onClick={togglePlay}
-                className="w-16 h-16 rounded-full bg-[#EA4A30] text-white flex items-center justify-center shadow-lg"
+                className="bg-[#D83232] hover:bg-[#B72929] text-white px-4 py-2 rounded-full font-body font-medium transition-colors cursor-pointer items-center gap-2 !w-12 !h-12 !p-0 !rounded-full flex items-center justify-center flex-shrink-0"
+                
               >
                 {isPlaying ? (
                   <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
@@ -271,7 +273,7 @@ const PodcastAudioPlayer = ({
                     <path d="M8 5v14l11-7z"></path>
                   </svg>
                 )}
-              </button>
+              </ButtonPrimary>
               
               <button
                 onClick={skipForward}
@@ -285,8 +287,8 @@ const PodcastAudioPlayer = ({
         </div>
 
       {/* Main Player Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50">
-        <div className="bg-white shadow-2xl max-w-full mx-auto px-2 md:px-6 lg:px-60 py-1 md:py-2 flex flex-col md:flex-row items-center gap-2 md:gap-4">
+      <div className="fixed bottom-0 left-0 right-0 z-50 w-7/8 md:w-2/3 mb-1 mx-auto rounded-full">
+        <div className="bg-white/95 backdrop-blur-sm shadow-md max-w-full mx-auto pl-2 pr-4 py-1 md:py-2 flex flex-col md:flex-row items-center gap-2 md:gap-4 rounded-full border border-zinc-200">
           <div className="flex items-center gap-2 md:gap-3 w-full md:w-auto md:flex-shrink-0">
             {/* Play button moved here for mobile */}
             <button
@@ -311,7 +313,7 @@ const PodcastAudioPlayer = ({
                 </svg>
               )}
             </button>
-            <div className="w-10 h-10 md:w-14 md:h-14 bg-gray-200 rounded-md relative overflow-hidden shadow-sm flex-shrink-0">
+            <div className="w-10 h-10 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-gray-200 rounded-full relative overflow-hidden shadow-sm flex-shrink-0 ">
               <img
                 src={image || "/8eh-real.svg"}
                 alt="cover"
@@ -418,14 +420,14 @@ const PodcastAudioPlayer = ({
                 step={0.1}
                 value={progress}
                 onChange={handleSeek}
-                className="flex-grow h-3 bg-gray-200 rounded-full relative min-w-0"
+                className="flex-grow h-3 bg-gray-200 rounded-full relative min-w-0 accent-red-600"
               />
               <span className="font-body w-8 text-left flex-shrink-0">
                 {formatTime(duration)}
               </span>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-2 flex-shrink-0 w-32 justify-end">
+          <div className="hidden md:flex items-center gap-2 flex-shrink-0 w-32 justify-center">
             <button
               type="button"
               onClick={toggleMute}

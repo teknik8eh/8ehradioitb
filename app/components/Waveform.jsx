@@ -9,6 +9,7 @@ const Waveform = ({ audioUrl, announcerName }) => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (waveformContainerRef.current) {
@@ -27,6 +28,11 @@ const Waveform = ({ audioUrl, announcerName }) => {
       wavesurferRef.current = ws;
 
       ws.on("ready", () => setIsLoading(false));
+      // Sembunyikan player jika audio tidak ada / gagal dimuat (mis. 404 di bucket)
+      ws.on("error", () => {
+        setHasError(true);
+        setIsLoading(false);
+      });
       ws.on("play", () => setIsPlaying(true));
       ws.on("pause", () => setIsPlaying(false));
 
@@ -41,6 +47,9 @@ const Waveform = ({ audioUrl, announcerName }) => {
       wavesurferRef.current.playPause();
     }
   };
+
+  // Jika audio tidak tersedia di bucket, jangan render player sama sekali
+  if (hasError) return null;
 
   return (
     // Container utama: flexbox horizontal untuk 2 kolom
