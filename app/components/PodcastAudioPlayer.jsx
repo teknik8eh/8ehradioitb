@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ButtonPrimary from "./ButtonPrimary";
 import { useGlobalAudio } from "@/app/hooks/useGlobalAudio"; // Import hook yang baru kita buat
+import { getMediaUrl } from "@/lib/mediaUrl";
 
 const PodcastAudioPlayer = ({
   audioUrl,
@@ -34,11 +35,11 @@ const PodcastAudioPlayer = ({
       // Always show player when audioUrl is provided
       setShowPlayer(true);
       setHasLoadedPodcast(true);
-      const fullUrl = audioUrl.startsWith("/")
-        ? audioUrl
-        : `/api/proxy-audio?key=${encodeURIComponent(audioUrl)}`;
+      const fullUrl = getMediaUrl(audioUrl);
 
-      if (audio.src !== window.location.origin + fullUrl) {
+      // Normalisasi agar perbandingan selalu absolut
+      const absoluteUrl = new URL(fullUrl, window.location.origin).href;
+      if (audio.src !== absoluteUrl) {
         audio.src = fullUrl;
         audio.load();
       }

@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { FiPlus, FiEdit, FiTrash2, FiSave, FiX } from 'react-icons/fi';
 import { hasAnyRole } from '@/lib/roleUtils';
+import { getMediaUrl } from '@/lib/mediaUrl';
 
 function PodcastDashboard() {
   const { data: session, status } = useSession(); 
@@ -380,7 +381,7 @@ function PodcastDashboard() {
                       <div className="space-y-3 mt-4">
                         <audio 
                           controls 
-                          src={podcast.audioUrl ? `/api/proxy-audio?key=${encodeURIComponent(podcast.audioUrl)}` : undefined} 
+                          src={podcast.audioUrl ? getMediaUrl(podcast.audioUrl) : undefined} 
                           className="w-full rounded-lg" 
                         />
                         <div className="font-body text-sm text-gray-500">
