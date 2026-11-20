@@ -49,7 +49,10 @@ export async function POST(request) {
     return NextResponse.json({ error: "deviceId required" }, { status: 400 });
   }
 
-  const sid = randomBytes(16).toString("hex");
+  const sid = cleanText(body?.sid) || randomBytes(16).toString("hex");
+  if (!/^[0-9a-f]{32}$/.test(sid)) {
+    return NextResponse.json({ error: "sid tidak valid" }, { status: 400 });
+  }
   await prisma.studioDeviceLink.upsert({
     where: { deviceId },
     update: {

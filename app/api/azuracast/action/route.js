@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { hasAnyRole } from "@/lib/roleUtils";
-import { prisma } from "@/lib/prisma";
+import { broadcastPrisma } from "@/lib/broadcast-db";
 import {
   getAzuraCastDashboardConfig,
   rotateAzuraCastSourcePassword,
@@ -34,7 +34,7 @@ function errorResponse(error) {
 }
 
 async function ensureBroadcastServerRunning() {
-  const state = await prisma.broadcastServerState.findUnique({
+  const state = await broadcastPrisma.broadcastServerState.findUnique({
     where: { key: "main" },
     select: { status: true, phase: true },
   });

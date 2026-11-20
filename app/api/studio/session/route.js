@@ -8,8 +8,21 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma";
+import { authenticateDevice } from "@/lib/studio-devices";
 
 export const dynamic = "force-dynamic";
+
+export async function GET(request) {
+  const device = await authenticateDevice(request.headers.get("x-device-token"));
+  if (!device) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: { "Cache-Control": "no-store" } });
+  }
+  return NextResponse.json({
+    user: { name: device.ownerName || "Kru 8EH" },
+    scope: device.scope,
+    metadataEnabled: device.metadataEnabled,
+  }, { headers: { "Cache-Control": "no-store" } });
+}
 
 function safeEqual(a, b) {
   const ba = Buffer.from(String(a));

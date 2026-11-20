@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { hasAnyRole } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
+import { broadcastPrisma } from "@/lib/broadcast-db";
 import {
   getAzuraCastDashboardConfig,
   getAzuraCastDashboardConfigWithStationDetails,
@@ -29,7 +30,7 @@ function errorResponse(error) {
 }
 
 async function getBroadcastServerGate() {
-  const state = await prisma.broadcastServerState.findUnique({
+  const state = await broadcastPrisma.broadcastServerState.findUnique({
     where: { key: "main" },
     select: {
       status: true,

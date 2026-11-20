@@ -1,38 +1,31 @@
 "use client";
 
-// /studio-link?dev=<deviceId>&name=<deviceName>
-// Halaman pairing app 8EH Studio:
-//   1. Kru login Google (kalau belum, NextAuth redirect balik sini).
-//   2. Server cek role → scope (TECHNIC/DEV = broadcast, MUSIC = metadata,
-//      lainnya ditolak).
-//   3. Kru klik Setujui → device dapat token; app polling otomatis menerima.
-
+import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useSession, signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import styles from "./page.module.css";
 
 export default function StudioLinkPage() {
   const { data: session, status } = useSession();
-  const [params, setParams] = useState({ dev: "", name: "" });
-  const [linkInfo, setLinkInfo] = useState(null); // { sid, scope, user }
+  const [params, setParams] = useState({ dev: "", name: "", sid: "" });
+  const [paramsReady, setParamsReady] = useState(false);
+  const [linkInfo, setLinkInfo] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState(""); // approved | denied | error
+  const [result, setResult] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const p = new URLSearchParams(window.location.search);
+    const query = new URLSearchParams(window.location.search);
     setParams({
-      dev: p.get("dev") || "",
-      name: p.get("name") || "Perangkat Studio",
+      dev: query.get("dev") || "",
+      name: query.get("name") || "Perangkat Studio",
+      sid: query.get("sid") || "",
     });
+    setParamsReady(true);
   }, []);
 
-  const role = session?.user?.role || "";
-
-  // buat link request begitu session siap — server yang menentukan scope
-  // (role tidak di-gate di client; error 403 server ditampilkan apa adanya)
   useEffect(() => {
-    if (status !== "authenticated" || !params.dev) return;
-    if (linkInfo) return;
+    if (status !== "authenticated" || !params.dev || linkInfo) return;
     (async () => {
       try {
         const res = await fetch("/api/studio/link-session", {
@@ -41,6 +34,7 @@ export default function StudioLinkPage() {
           body: JSON.stringify({
             deviceId: params.dev,
             deviceName: params.name,
+            sid: params.sid,
           }),
         });
         const data = await res.json();
@@ -53,7 +47,7 @@ export default function StudioLinkPage() {
   }, [status, params, linkInfo]);
 
   const approve = async (isApprove) => {
-    if (!linkInfo) return;
+    if (!linkInfo || busy) return;
     setBusy(true);
     setError("");
     try {
@@ -72,94 +66,156 @@ export default function StudioLinkPage() {
     }
   };
 
+  const role = session?.user?.role || "";
+  const scope =
+    linkInfo?.scope === "broadcast"
+      ? "Siaran + metadata"
+      : linkInfo?.scope === "metadata"
+        ? "Hanya metadata"
+        : "Menunggu verifikasi";
+
   return (
-    <div className="min-h-screen bg-[#14161a] text-gray-100 flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-[#1c1f26] border border-gray-700/60 rounded-2xl p-8 space-y-5">
-        <div>
-          <h1 className="text-xl font-bold">8EH Studio — Hubungkan Perangkat</h1>
-          <p className="text-sm text-gray-400 mt-1">
-            App di perangkat ini minta izin terhubung ke sistem 8EH.
-          </p>
-        </div>
+    <main className={styles.page}>
+      <div className={styles.shell}>
+        <header className={styles.brand}>
+          <Image
+            src="/8eh.png"
+            alt="8EH"
+            width={43}
+            height={43}
+            className={styles.logo}
+            priority
+          />
+          <span className={styles.brandName}>Studio</span>
+        </header>
 
-        <div className="bg-black/30 rounded-lg p-4 text-sm space-y-2">
-          <div>
-            <span className="text-gray-500">Perangkat: </span>
-            <span className="font-medium">{params.name || "—"}</span>
+        <section className={styles.card} aria-labelledby="studio-link-title">
+          <div className={styles.heading}>
+            <p className={styles.eyebrow}>Device link</p>
+            <h1 id="studio-link-title" className={styles.title}>
+              Hubungkan perangkat
+            </h1>
+            <p className={styles.intro}>
+              Periksa akun dan akses di bawah sebelum menghubungkan perangkat ke
+              8EH Studio.
+            </p>
           </div>
-          {status === "authenticated" && (
-            <div>
-              <span className="text-gray-500">Akun: </span>
-              <span className="font-medium">{session.user.name || session.user.email}</span>
-              <span className="ml-2 text-xs px-2 py-0.5 rounded bg-gray-700">{role || "—"}</span>
+
+          <dl className={styles.details}>
+            <div className={styles.detailRow}>
+              <dt>Perangkat</dt>
+              <dd title={params.name}>
+                {paramsReady ? params.name : "Memuat…"}
+              </dd>
             </div>
-          )}
-          {linkInfo && (
-            <div>
-              <span className="text-gray-500">Akses: </span>
-              <span className="font-medium">
-                {linkInfo.scope === "broadcast"
-                  ? "Siaran + Metadata"
-                  : linkInfo.scope === "metadata"
-                    ? "Hanya Metadata"
-                    : "—"}
-              </span>
+            <div className={styles.detailRow}>
+              <dt>Akun kru</dt>
+              <dd>
+                {status === "authenticated"
+                  ? session?.user?.name || session?.user?.email || "—"
+                  : "Belum login"}
+              </dd>
             </div>
-          )}
-        </div>
+            {status === "authenticated" && (
+              <div className={styles.detailRow}>
+                <dt>Role</dt>
+                <dd>
+                  <span className={styles.role}>{role || "—"}</span>
+                </dd>
+              </div>
+            )}
+            {status === "authenticated" && (
+              <div className={styles.detailRow}>
+                <dt>Akses</dt>
+                <dd>{scope}</dd>
+              </div>
+            )}
+          </dl>
 
-        {status === "loading" && (
-          <p className="text-sm text-gray-500">Memuat…</p>
-        )}
+          <div className={styles.actionArea} aria-live="polite">
+            {status === "loading" && (
+              <p className={styles.info}>Memeriksa sesi akun…</p>
+            )}
 
-        {status === "unauthenticated" && (
-          <button
-            onClick={() => signIn("google", { callbackUrl: window.location.href })}
-            className="w-full py-3 rounded-lg bg-white text-gray-900 font-semibold hover:bg-gray-200"
-          >
-            Login dengan Google
-          </button>
-        )}
+            {paramsReady && !params.dev && (
+              <p className={styles.error} role="alert">
+                Tautan perangkat tidak lengkap. Buka login lagi dari aplikasi
+                8EH Studio.
+              </p>
+            )}
 
-        {status === "authenticated" && error && (
-          <p className="text-sm text-red-400">{error}</p>
-        )}
+            {status === "unauthenticated" && params.dev && (
+              <>
+                <p className={styles.info}>
+                  Login dengan akun kru 8EH untuk melanjutkan.
+                </p>
+                <button
+                  type="button"
+                  className={`${styles.button} ${styles.primary}`}
+                  onClick={() =>
+                    signIn("google", { callbackUrl: window.location.href })
+                  }
+                >
+                  Login dengan Google
+                </button>
+              </>
+            )}
 
-        {status === "authenticated" && !result && (
-          <div className="flex gap-3">
-            <button
-              disabled={!linkInfo || busy}
-              onClick={() => approve(true)}
-              className="flex-1 py-3 rounded-lg bg-[#D83232] hover:bg-[#c02a2a] font-semibold disabled:opacity-40"
-            >
-              {busy ? "Memproses…" : "Setujui"}
-            </button>
-            <button
-              disabled={!linkInfo || busy}
-              onClick={() => approve(false)}
-              className="flex-1 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 font-semibold disabled:opacity-40"
-            >
-              Tolak
-            </button>
+            {status === "authenticated" && error && (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            )}
+
+            {status === "authenticated" && params.dev && !result && (
+              <>
+                {!linkInfo && !error && (
+                  <p className={styles.info}>
+                    Menyiapkan permintaan perangkat…
+                  </p>
+                )}
+                <div className={styles.actions}>
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.primary}`}
+                    disabled={!linkInfo || busy}
+                    onClick={() => approve(true)}
+                  >
+                    {busy ? "Memproses…" : "Setujui perangkat"}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.secondary}`}
+                    disabled={!linkInfo || busy}
+                    onClick={() => approve(false)}
+                  >
+                    Tolak
+                  </button>
+                </div>
+              </>
+            )}
+
+            {result === "approved" && (
+              <p className={styles.success} role="status">
+                Perangkat disetujui. Kembali ke aplikasi 8EH Studio; login akan
+                selesai dalam beberapa detik.
+              </p>
+            )}
+            {result === "denied" && (
+              <p className={styles.info} role="status">
+                Permintaan ditolak. Anda dapat menutup halaman ini.
+              </p>
+            )}
           </div>
-        )}
 
-        {result === "approved" && (
-          <p className="text-sm text-green-400">
-            ✓ Perangkat disetujui. Balik ke app 8EH Studio — login otomatis
-            selesai dalam beberapa detik.
-          </p>
-        )}
-        {result === "denied" && (
-          <p className="text-sm text-yellow-400">
-            Permintaan ditolak. Kamu bisa menutup halaman ini.
-          </p>
-        )}
-
-        <p className="text-xs text-gray-600">
-          Kode perangkat: <span className="font-mono">{params.dev.slice(0, 12)}…</span>
-        </p>
+          {params.dev && (
+            <p className={styles.deviceCode}>
+              Kode perangkat <span>{params.dev.slice(0, 12)}…</span>
+            </p>
+          )}
+        </section>
+        <p className={styles.footer}>8EH Studio · Akses perangkat kru</p>
       </div>
-    </div>
+    </main>
   );
 }

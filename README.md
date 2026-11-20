@@ -22,6 +22,10 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Shared broadcast server in dev2
+
+Set `MONGODB_URL` to the `dev2` database and add `BROADCAST_SERVER_SHARED_DB_NAME=Cluster0` to the web environment. The broadcast server state and stream URLs then come from `Cluster0`; admin start, end, retry, extend, and AzuraCast service actions control the production server. On Air, live chat, song requests, listener snapshots, and device login data stay in `dev2`. The dev2 watchdog skips its run so the production watchdog remains the only automatic controller. Leave the shared database setting unset in production.
+
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
