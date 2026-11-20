@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Plus_Jakarta_Sans, Arimo, Instrument_Serif } from "next/font/google";
 import "./globals.css";
-import GlobalAudioPlayer from "@/app/components/GlobalAudioPlayer";
+import StudioLinkPlayerGate from "@/app/components/StudioLinkPlayerGate";
 import AuthProvider from "@/app/components/AuthProvider";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
@@ -158,7 +158,7 @@ export default async function RootLayout({ children }) {
       >
         <AuthProvider session={session}>
           {children}
-          <GlobalAudioPlayer />
+          <StudioLinkPlayerGate />
           <ToastProvider />
         </AuthProvider>
         {/* <ChatWidgetWrapper /> */}

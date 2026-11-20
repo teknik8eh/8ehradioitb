@@ -75,9 +75,7 @@ function getUptime(startedAt, now) {
 
 function getMinutesUntil(value, now) {
   if (!value) return null;
-  const minutes = Math.ceil(
-    (new Date(value).getTime() - now) / 1000 / 60,
-  );
+  const minutes = Math.ceil((new Date(value).getTime() - now) / 1000 / 60);
   return Number.isFinite(minutes) ? minutes : null;
 }
 
@@ -102,8 +100,7 @@ function getDisplayStatus(status) {
   if (status === "idle") return "Off";
   if (["creating", "booting"].includes(status)) return "Starting";
   if (status === "running") return "Ready";
-  if (["ending", "snapshotting", "deleting"].includes(status))
-    return "Ending";
+  if (["ending", "snapshotting", "deleting"].includes(status)) return "Ending";
   if (status === "failed") return "Needs Attention";
   return "Checking";
 }
@@ -403,7 +400,8 @@ export default function BroadcastServerPage() {
           >
             <FiRefreshCw className={isTransient ? "animate-spin" : ""} />
             Refresh
-          </button>        </div>
+          </button>{" "}
+        </div>
       </section>
 
       {simpleError && (
@@ -469,11 +467,7 @@ export default function BroadcastServerPage() {
           value={state.autoEndAt ? formatDate(state.autoEndAt) : "-"}
           highlight
         />
-        <InfoCard
-          label="Active IP"
-          value={state.activeServerIp}
-          highlight
-        />
+        <InfoCard label="Active IP" value={state.activeServerIp} highlight />
       </div>
 
       {autoEndStatus && (
@@ -514,7 +508,9 @@ export default function BroadcastServerPage() {
       )}
 
       <section className="rounded-lg border border-gray-300 bg-white p-5 shadow-sm ring-1 ring-gray-100">
-        <h2 className="font-heading text-xl font-bold text-gray-900">Actions</h2>
+        <h2 className="font-heading text-xl font-bold text-gray-900">
+          Actions
+        </h2>
         <div className="mt-4 flex flex-wrap gap-3">
           {availableActions.map((actionId) => {
             const action = ACTIONS[actionId];
@@ -581,6 +577,7 @@ export default function BroadcastServerPage() {
           />
           <InfoCard label="Server Type" value={config.serverType} />
           <InfoCard label="Location" value={config.location} />
+          <InfoCard label="Last Error" value={state.lastError} />
         </div>
       </details>
 

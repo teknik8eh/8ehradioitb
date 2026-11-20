@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { runBroadcastServerWatchdog } from "@/lib/broadcastServer";
+import { sharedBroadcastMode } from "@/lib/broadcast-db";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,9 @@ export async function GET(req) {
       );
     }
 
+    if (sharedBroadcastMode) {
+      return NextResponse.json({ ok: true, skipped: true, reason: "shared-broadcast-state" });
+    }
     return NextResponse.json(await runBroadcastServerWatchdog());
   } catch (error) {
     console.error("Broadcast server watchdog failed:", error);

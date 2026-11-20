@@ -367,7 +367,60 @@ model NowPlayingState {
   isActive   Boolean   @default(false)
   startedAt  DateTime?
   updatedBy  String?
+  // siapa yang pegang kendali tampilan now playing:
+  // "manual" = dashboard, "agent-auto"/"agent-program" = companion, null = bebas
+  control    String?
+  // device yang DIPILIH dashboard sebagai sumber metadata aktif
+  // (StudioDevice.deviceId). Kalau null = aturan lama (terakhir menang).
+  activeDeviceId String?
   updatedAt  DateTime  @updatedAt
+}
+
+// Akun khusus aplikasi 8EH Studio (broadcaster & companion).
+// Dibuat admin; kru login dengan username/password di app —
+// app lalu menerima token perangkat via /api/studio/session,
+// sehingga kru tidak pernah berurusan dengan token manual.
+model StudioAccount {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  username       String    @unique
+  displayName    String
+  passwordHash   String
+  // "broadcaster" boleh streaming + metadata; "companion" hanya metadata
+  role           String    @default("broadcaster")
+  active         Boolean   @default(true)
+  lastLoginAt    DateTime?
+  createdAt      DateTime  @default(now())
+}
+
+// Perangkat yang terhubung ke app 8EH Studio via Google login (device link).
+// scope "broadcast" = siaran + metadata (TECHNIC/DEVELOPER),
+// scope "metadata"   = hanya metadata (MUSIC).
+// metadataEnabled   = bisa dimatikan dashboard agar device technic
+//                     tidak saling menabrak laptop music.
+model StudioDevice {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  deviceId        String    @unique // random per instalasi app (rahasia perangkat)
+  deviceName      String
+  token           String    @unique // dikirim app sebagai X-Device-Token
+  ownerName       String?
+  scope           String    @default("metadata")
+  metadataEnabled Boolean   @default(true)
+  active          Boolean   @default(true)
+  lastSeenAt      DateTime?
+  createdAt       DateTime  @default(now())
+}
+
+// Link request sementara saat app 8EH Studio pairing lewat Google login.
+// sid rahasia dipakai app untuk polling sampai disetujui/ditolak.
+model StudioDeviceLink {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  sid        String   @unique
+  deviceId   String   @unique
+  deviceName String
+  ownerName  String?
+  scope      String   @default("metadata")
+  status     String   @default("pending") // pending | approved | denied
+  createdAt  DateTime @default(now())
 }
 
 model AzuraCastListenerSnapshot {
