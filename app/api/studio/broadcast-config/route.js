@@ -17,9 +17,15 @@ export async function GET(request) {
   }
 
   try {
-    const { liveSource } = await getAzuraCastDashboardConfigWithStationDetails();
+    const { liveSource, missing: missingApiVariables } = await getAzuraCastDashboardConfigWithStationDetails();
     if (!liveSource?.isConfigured || !liveSource.mount) {
-      return NextResponse.json({ error: "Broadcast source is not configured" }, { status: 503, headers: noStore });
+      const missingSourceFields = [...(liveSource?.missing || [])];
+      if (!liveSource?.mount) missingSourceFields.push("AZURACAST_STREAM_MOUNT");
+      return NextResponse.json({
+        error: "Broadcast source is not configured",
+        missingApiVariables,
+        missingSourceFields,
+      }, { status: 503, headers: noStore });
     }
     const { host, port, mount, username, password } = liveSource;
     const configuredBitrate = Number(process.env.AZURACAST_STREAM_BITRATE || 192);
