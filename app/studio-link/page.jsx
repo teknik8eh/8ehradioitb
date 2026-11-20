@@ -69,9 +69,9 @@ export default function StudioLinkPage() {
   const role = session?.user?.role || "";
   const scope =
     linkInfo?.scope === "broadcast"
-      ? "Siaran + metadata"
+      ? "Siaran (metadata awal nonaktif)"
       : linkInfo?.scope === "metadata"
-        ? "Hanya metadata"
+        ? "Metadata aktif"
         : "Menunggu verifikasi";
 
   return (
