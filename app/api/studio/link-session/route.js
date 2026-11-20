@@ -17,7 +17,7 @@ import { randomBytes } from "crypto";
 import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { scopeForRoles, generateDeviceToken } from "@/lib/studio-devices";
+import { scopeForRoles, generateDeviceToken, metadataEnabledByDefault } from "@/lib/studio-devices";
 
 export const dynamic = "force-dynamic";
 
@@ -123,7 +123,7 @@ export async function PUT(request) {
       ownerName: link.ownerName,
       scope: link.scope,
       active: true,
-      metadataEnabled: true,
+      metadataEnabled: metadataEnabledByDefault(link.scope),
       lastSeenAt: new Date(),
     },
     create: {
@@ -133,7 +133,7 @@ export async function PUT(request) {
       ownerName: link.ownerName,
       scope: link.scope,
       active: true,
-      metadataEnabled: true,
+      metadataEnabled: metadataEnabledByDefault(link.scope),
       lastSeenAt: new Date(),
     },
   });
