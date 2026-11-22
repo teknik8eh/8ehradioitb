@@ -127,7 +127,7 @@ const AnnouncerCard = ({ name, role, imageSrc }) => (
 );
 
 const HeroSection = () => (
-  <section className="relative w-full min-h-150 md:min-h-[500px] flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-28 pb-20 md:pb-0">
+  <section className="relative w-full min-h-150 md:min-h-150 flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-28 pb-20 md:pb-0">
     <div className="absolute inset-0 z-10 pointer-events-none">
       <div className="absolute right-0 bottom-0 md:top-1/8 w-140 translate-x-1/3 md:w-300 z-0 pointer-events-none">
         <Image
@@ -195,7 +195,7 @@ const AnnouncerServicesSection = () => (
     </div>
 
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
-      <div className="md:bg-gradient-to-b from-orange-200 to-orange-400/70 transition-all duration-300 border hover:border-gray-300 border-gray-200/80 rounded-3xl md:shadow-lg px-10 py-6 md:px-16 grid md:grid-cols-2 gap-8 items-center backdrop-blur-xs">
+      <div className="md:bg-linear-to-b from-[#ffeebb] to-[#ffbf00b7] transition-all duration-300 border hover:border-zinc-300 border-zinc-200/80 rounded-4xl md:shadow-md px-10 py-6 md:px-16 grid md:grid-cols-2 gap-8 items-center backdrop-blur-xs">
         <div>
           <h2 className="align-middle text-5xl md:text-6xl font-accent text-black leading-tight">
             Professional <br /> Announcer Services
@@ -232,7 +232,7 @@ const AnnouncerServicesSection = () => (
                 Talent Kami
               </h3>
               <p className="text-black font-body text-sm">
-                Kenalan dengan tim kami yang penuh warna—kumpulan announcer, reporter, dan desainer grafis berbakat!
+                Kenalan dengan tim kami yang penuh warna dan berbakat!
               </p>
             </div>
           </div>
@@ -276,7 +276,7 @@ const AnnouncerServicesSection = () => (
 );
 
 const AnnouncersSection = () => (
-  <section className="pb-12 bg-gradient-to-b from-orange-400 via-orange-300 to-orange-200 text-gray-800">
+  <section className="pb-12 bg-gradient-to-b from-orange-400 via-orange-300 to-orange-200/0 text-gray-800">
     {/* <Image
         src="/agency-white-transition.png"
         alt="A group of microphones with a halftone effect"
@@ -287,7 +287,7 @@ const AnnouncersSection = () => (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
       <div className="text-center max-w-2xl mb-12 mx-auto">
         <h2 className="font-accent text-5xl sm:text-7xl text-white font-bold mb-4 drop-shadow-md">
-          Announcers
+          Talents
         </h2>
         {/* <ButtonPrimary className="!px-4 !py-2 mt-4 !pointer-events-none">
           Announcers
@@ -419,8 +419,8 @@ export default function AgencyServicesPage() {
       <HeroSection />
       <AnnouncerServicesSection />
       <AnnouncersSection />
-      <ReporterSection />
-      <MarketingSection />
+      {/* <ReporterSection />
+      <MarketingSection /> */}
       <ContactSection />
       <FooterSection />
     </div>

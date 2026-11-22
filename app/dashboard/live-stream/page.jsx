@@ -353,6 +353,17 @@ export default function LiveStreamDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canManage, sessionStatus]);
 
+  // Keep listener stats and the chart fresh while the page is open.
+  useEffect(() => {
+    if (!canManage || isLocked) return undefined;
+    const id = setInterval(() => {
+      fetchStatus({ silent: true });
+      fetchListenerHistory();
+    }, 60000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canManage, isLocked]);
+
   const copyValue = async (value) => {
     if (!value) return;
     await navigator.clipboard.writeText(value);
@@ -468,6 +479,10 @@ export default function LiveStreamDashboard() {
               Live Stream
             </p>
             <div className="mt-2 flex flex-wrap items-center gap-3">
+              <span
+                className={`h-3 w-3 rounded-full ${statusDotTone(streamStatus)}`}
+                aria-hidden="true"
+              />
               <h1 className="font-heading text-3xl font-bold text-gray-900">
                 {streamStatus === "online"
                   ? "Online"
@@ -475,14 +490,6 @@ export default function LiveStreamDashboard() {
                     ? "Offline"
                     : "Checking"}
               </h1>
-              <span
-                className={`inline-flex items-center gap-2 rounded-full border bg-white/70 px-3 py-1 text-xs font-bold ${statusTone(
-                  streamStatus,
-                )}`}
-              >
-                <span className={`h-2 w-2 rounded-full ${statusDotTone(streamStatus)}`} />
-                {streamStatus}
-              </span>
             </div>
             <p className="mt-2 font-body text-sm text-gray-600">
               Pantau stream, listener, dan kredensial live encoder dari sini.
@@ -548,14 +555,20 @@ export default function LiveStreamDashboard() {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="font-body text-sm font-bold uppercase tracking-wide text-gray-500">
-                  Listener Sekarang
+                  Current Listeners
                 </p>
                 <p className="mt-1 font-heading text-6xl font-bold text-gray-900">
                   {listenerStats.current ?? "-"}
                 </p>
-              </div>
-              <div className="rounded-md bg-gray-50 px-4 py-3 font-body text-sm text-gray-600">
-                Peak: <span className="font-bold text-gray-900">{listenerStats.total ?? "-"}</span>
+                <p className="mt-2 font-body text-sm text-gray-600">
+                  Peak this session:{" "}
+                  <span className="font-bold text-gray-900">
+                    {listenerStats.total ?? "-"}
+                  </span>
+                  <span className="block text-xs text-gray-400">
+                    Highest listener count since the broadcast server started.
+                  </span>
+                </p>
               </div>
             </div>
           </Panel>

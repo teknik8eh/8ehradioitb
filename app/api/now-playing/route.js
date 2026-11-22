@@ -4,10 +4,13 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { hasAnyRole } from "@/lib/roleUtils";
 import { publishNowPlaying } from "@/lib/pusher";
+import {
+  STATE_KEY,
+  getCurrentNowPlaying,
+  upsertNowPlayingState,
+} from "@/lib/now-playing-state";
 
 export const dynamic = "force-dynamic";
-
-const STATE_KEY = "main";
 
 function canManage(roleString) {
   return hasAnyRole(roleString, ["MUSIC", "DEVELOPER"]);
@@ -15,21 +18,6 @@ function canManage(roleString) {
 
 function cleanString(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-async function getFallbackPayload() {
-  const config = await prisma.playerConfig.findFirst();
-  return {
-    source: "fallback",
-    title: config?.title || "8EH Radio ITB",
-    artist: config?.subtitle || "Live Now",
-    coverImage: config?.coverImage || "/8eh.png",
-    isActive: false,
-    playlistId: null,
-    itemId: null,
-    startedAt: null,
-    updatedAt: config?.updatedAt || null,
-  };
 }
 
 function statePayload(state, coverImage) {
@@ -48,32 +36,9 @@ function statePayload(state, coverImage) {
   };
 }
 
-async function getCurrentNowPlaying() {
-  const [state, fallback] = await Promise.all([
-    prisma.nowPlayingState.findUnique({ where: { key: STATE_KEY } }),
-    getFallbackPayload(),
-  ]);
-
-  return statePayload(state, fallback.coverImage) || fallback;
-}
-
-async function requireManager() {
-  const session = await getServerSession(authOptions);
-  if (!session || !canManage(session.user.role)) return null;
-  return session;
-}
-
-async function upsertState(data) {
-  return prisma.nowPlayingState.upsert({
-    where: { key: STATE_KEY },
-    update: data,
-    create: {
-      key: STATE_KEY,
-      ...data,
-    },
-  });
-}
-
+// shortcut: duplikat statePayload lokal — lib/now-playing-state tidak
+// mengekspor pembentuk payload per-state (dipakai setelah upsert).
+// Rapikan saat Tahap 2 bersama route studio.
 async function setItemNowPlaying(itemId, session) {
   const item = await prisma.nowPlayingPlaylistItem.findUnique({
     where: { id: itemId },
@@ -84,7 +49,7 @@ async function setItemNowPlaying(itemId, session) {
     return { error: "Playlist item not found", status: 404 };
   }
 
-  const state = await upsertState({
+  const state = await upsertNowPlayingState({
     source: "manual-playlist",
     playlistId: item.playlistId,
     itemId: item.id,
@@ -94,9 +59,16 @@ async function setItemNowPlaying(itemId, session) {
     isActive: true,
     startedAt: new Date(),
     updatedBy: session.user?.email || session.user?.name || null,
+    control: "manual", // dashboard mengunci kendali; agent menunggu
   });
 
-  return { payload: state };
+  return { payload: statePayload(state, item.coverImage) };
+}
+
+async function requireManager() {
+  const session = await getServerSession(authOptions);
+  if (!session || !canManage(session.user.role)) return null;
+  return session;
 }
 
 async function respondAndPublish(payload) {
@@ -193,7 +165,7 @@ export async function POST(req) {
     }
 
     if (action === "clear") {
-      await upsertState({
+      await upsertNowPlayingState({
         source: "manual-playlist",
         playlistId: null,
         itemId: null,
@@ -203,6 +175,7 @@ export async function POST(req) {
         isActive: false,
         startedAt: null,
         updatedBy: session.user?.email || session.user?.name || null,
+        control: null, // clear dari dashboard melepas kendali manual
       });
 
       return respondAndPublish(await getCurrentNowPlaying());

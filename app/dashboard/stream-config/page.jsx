@@ -13,6 +13,7 @@ export default function StreamConfigPage() {
     onAir: false,
     liveChatEnabled: true,
     songRequestEnabled: true,
+    sharedBroadcastUrls: false,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -24,7 +25,10 @@ export default function StreamConfigPage() {
 
   useEffect(() => {
     fetch("/api/stream-config")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load stream configuration");
+        return res.json();
+      })
       .then((data) => {
         setConfig({
           baseUrls: data?.baseUrls || [],
@@ -33,6 +37,7 @@ export default function StreamConfigPage() {
           onAir: typeof data?.onAir === "boolean" ? data.onAir : true,
           liveChatEnabled: data?.liveChatEnabled !== false,
           songRequestEnabled: data?.songRequestEnabled !== false,
+          sharedBroadcastUrls: data?.sharedBroadcastUrls === true,
         });
       })
       .catch(() => {
@@ -86,6 +91,8 @@ export default function StreamConfigPage() {
         body: JSON.stringify(config),
       });
       if (!res.ok) throw new Error("Failed to save configuration.");
+      const saved = await res.json();
+      setConfig((current) => ({ ...current, ...saved }));
       setSuccess("Configuration saved successfully!");
     } catch (err) {
       setError(err.message);
@@ -113,7 +120,8 @@ export default function StreamConfigPage() {
         {/* Base URLs Section */}
         <div>
           <label className="block font-semibold font-body text-gray-700 mb-2">Stream URLs</label>
-          <div className="flex flex-col sm:flex-row gap-2 mb-3">
+          {config.sharedBroadcastUrls && <p className="mb-3 text-sm text-gray-600">URL stream mengikuti konfigurasi produksi. Status On Air dan fitur sesi di bawah tetap khusus dev2.</p>}
+          {!config.sharedBroadcastUrls && <div className="flex flex-col sm:flex-row gap-2 mb-3">
             <input
               value={newUrl}
               onChange={(e) => setNewUrl(e.target.value)}
@@ -128,18 +136,18 @@ export default function StreamConfigPage() {
               <FiPlus />
               Add
             </button>
-          </div>
+          </div>}
           <ul className="space-y-2 font-body">
             {config.baseUrls.length > 0 ? config.baseUrls.map((url) => (
               <li key={url} className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-md shadow-sm">
                 <span className="flex-1 text-gray-800 text-sm break-all">{url}</span>
-                <button
+                {!config.sharedBroadcastUrls && <button
                   type="button"
                   onClick={() => handleRemoveUrl(url)}
                   className="p-1 text-red-500 hover:text-red-700 hover:bg-red-100 rounded-full transition-colors cursor-pointer"
                 >
                   <FiTrash2 size={16}/>
-                </button>
+                </button>}
               </li>
             )) : <p className="text-sm text-gray-500 text-center py-4">No URLs added yet.</p>}
           </ul>
@@ -154,6 +162,7 @@ export default function StreamConfigPage() {
                 name="defaultUrl"
                 value={config.defaultUrl}
                 onChange={handleChange}
+                disabled={config.sharedBroadcastUrls}
                 className="w-full border border-gray-300 p-3 rounded-md font-body text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors cursor-pointer"
               >
                 <option value="">Select default stream</option>
@@ -169,6 +178,7 @@ export default function StreamConfigPage() {
                 name="fallbackUrl"
                 value={config.fallbackUrl}
                 onChange={handleChange}
+                disabled={config.sharedBroadcastUrls}
                 className="w-full border border-gray-300 p-3 rounded-md font-body text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors cursor-pointer"
               >
                 <option value="">Select fallback stream</option>

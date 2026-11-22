@@ -21,4 +21,4 @@ Allow: /faq/
 Crawl-delay: 1
 
 # Sitemaps
-Sitemap: https://8ehradioitb.com/sitemap.xml
+Sitemap: https://www.8ehradioitb.com/sitemap.xml

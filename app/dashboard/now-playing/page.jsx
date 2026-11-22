@@ -40,9 +40,72 @@ export default function NowPlayingDashboard() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [devices, setDevices] = useState([]);
+  const [activeDeviceId, setActiveDeviceId] = useState(null);
+  const [devicesError, setDevicesError] = useState("");
 
   const canManage =
     session && hasAnyRole(session.user.role, ["MUSIC", "DEVELOPER"]);
+
+  // Panel perangkat hanya untuk TECHNIC/DEVELOPER
+  const canManageDevices =
+    session && hasAnyRole(session.user.role, ["TECHNIC", "DEVELOPER"]);
+
+  const loadDevices = async () => {
+    if (!canManageDevices) return;
+    setDevicesError("");
+    try {
+      const res = await fetch("/api/studio/devices", { cache: "no-store" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Gagal memuat perangkat.");
+      setDevices(data.devices || []);
+      setActiveDeviceId(data.activeDeviceId || null);
+    } catch (e) {
+      setDevicesError(e.message);
+    }
+  };
+
+  const deviceAction = async (kind, device, message) => {
+    setSaving(true);
+    setError("");
+    try {
+      let res;
+      if (kind === "select") {
+        res = await fetch("/api/studio/devices", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "select", id: device.id }),
+        });
+      } else if (kind === "clear") {
+        res = await fetch("/api/studio/devices", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "clearSelection" }),
+        });
+      } else if (kind === "metadata") {
+        res = await fetch("/api/studio/devices", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: device.id,
+            metadataEnabled: !device.metadataEnabled,
+          }),
+        });
+      } else if (kind === "revoke") {
+        res = await fetch(`/api/studio/devices?id=${device.id}`, {
+          method: "DELETE",
+        });
+      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Aksi gagal.");
+      setSuccess(message);
+      await loadDevices();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const selectedPlaylist = useMemo(
     () => playlists.find((playlist) => playlist.id === selectedPlaylistId),
@@ -77,6 +140,7 @@ export default function NowPlayingDashboard() {
     setLoading(true);
     try {
       await Promise.all([fetchNowPlaying(), fetchPlaylists()]);
+      await loadDevices();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -391,6 +455,156 @@ export default function NowPlayingDashboard() {
           </div>
         </div>
       </section>
+
+      {/* ===== PANEL PERANGKAT 8EH STUDIO ===== */}
+      {canManageDevices && (
+      <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 className="font-heading font-bold text-xl text-gray-900">
+              Perangkat 8EH Studio
+            </h2>
+            <p className="text-sm text-gray-500 font-body">
+              Pilih device yang boleh mengirim metadata; device lain akan ditolak.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={loadDevices}
+            className="text-sm px-3 py-1.5 rounded-md border border-gray-300 hover:bg-gray-50 font-body"
+          >
+            Refresh
+          </button>
+        </div>
+
+        {devicesError && (
+          <p className="text-sm text-red-600 font-body">{devicesError}</p>
+        )}
+
+        {!devices.length && !devicesError && (
+          <p className="text-sm text-gray-500 font-body">
+            Belum ada perangkat terhubung. Jalankan app 8EH Studio → Login dengan
+            Google untuk memasangkan.
+          </p>
+        )}
+
+        <div className="space-y-3">
+          {devices.map((d) => {
+            const isActiveDevice = d.deviceId === activeDeviceId;
+            return (
+              <div
+                key={d.id}
+                className={`p-4 rounded-lg border ${
+                  isActiveDevice
+                    ? "border-green-500 bg-green-50"
+                    : "border-gray-200 bg-gray-50"
+                }`}
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-gray-900 font-body truncate">
+                        {d.deviceName}
+                      </span>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full ${
+                          d.scope === "broadcast"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-blue-100 text-blue-700"
+                        }`}
+                      >
+                        {d.scope === "broadcast" ? "Siaran+Metadata" : "Metadata"}
+                      </span>
+                      {!d.active && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-600">
+                          dicabut
+                        </span>
+                      )}
+                      {!d.metadataEnabled && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700">
+                          metadata OFF
+                        </span>
+                      )}
+                      {isActiveDevice && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-green-600 text-white">
+                          AKTIF
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 font-body mt-1">
+                      {d.ownerName || "—"} · terakhir dilihat:{" "}
+                      {d.lastSeenAt
+                        ? new Date(d.lastSeenAt).toLocaleString("id-ID")
+                        : "belum pernah"}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      disabled={saving || isActiveDevice}
+                      onClick={() =>
+                        deviceAction("select", d, `${d.deviceName} dipilih sebagai sumber metadata.`)
+                      }
+                      className="text-sm px-3 py-1.5 rounded-md bg-green-600 hover:bg-green-700 text-white disabled:opacity-40 cursor-pointer"
+                    >
+                      {isActiveDevice ? "Terpilih" : "Jadikan Aktif"}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={saving}
+                      onClick={() =>
+                        deviceAction(
+                          "metadata",
+                          d,
+                          `Metadata ${!d.metadataEnabled ? "diaktifkan" : "dimatikan"} untuk ${d.deviceName}.`,
+                        )
+                      }
+                      className={`text-sm px-3 py-1.5 rounded-md cursor-pointer ${
+                        d.metadataEnabled
+                          ? "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                          : "bg-yellow-500 hover:bg-yellow-600 text-white"
+                      } disabled:opacity-50`}
+                    >
+                      {d.metadataEnabled ? "Matikan Metadata" : "Aktifkan Metadata"}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={saving}
+                      onClick={() => {
+                        if (
+                          !window.confirm(
+                            `Cabut akses ${d.deviceName}? App harus login ulang.`,
+                          )
+                        )
+                          return;
+                        deviceAction("revoke", d, `Akses ${d.deviceName} dicabut.`);
+                      }}
+                      className="text-sm px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white disabled:opacity-50 cursor-pointer"
+                    >
+                      Cabut Akses
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {activeDeviceId && (
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() =>
+              deviceAction("clear", null, "Pemilihan device dikosongkan (aturan: bebas).")
+            }
+            className="mt-4 text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer"
+          >
+            Kosongkan pilihan (semua device bebas kirim)
+          </button>
+        )}
+      </section>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
         <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-fit">

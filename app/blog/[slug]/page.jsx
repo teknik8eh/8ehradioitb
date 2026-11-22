@@ -29,7 +29,7 @@ const getPost = cache(async (slug) => {
   return post;
 });
 
-const SITE_URL = "https://8ehradioitb.com";
+const SITE_URL = "https://www.8ehradioitb.com";
 
 function stripMarkdown(text = "") {
   return text

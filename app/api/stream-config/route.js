@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { broadcastPrisma, sharedBroadcastMode } from "@/lib/broadcast-db";
+import { mergeSharedStreamUrls } from "@/lib/shared-stream-config";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { hasAnyRole } from "@/lib/roleUtils";
@@ -64,12 +66,18 @@ function buildConfigData(body, currentConfig) {
   };
 }
 
+async function withSharedStreamUrls(config) {
+  if (!sharedBroadcastMode) return config;
+  const source = await broadcastPrisma.streamConfig.findFirst();
+  return mergeSharedStreamUrls(config, source);
+}
+
 export async function GET() {
   const config = await prisma.streamConfig.findFirst();
   const activeRoom = await getActiveRoomOrNull();
 
   return NextResponse.json({
-    ...normalizeConfig(config),
+    ...await withSharedStreamUrls(normalizeConfig(config)),
     roomId: activeRoom?.id ?? null,
     broadcastId: activeRoom?.broadcastId ?? null,
     broadcastStartedAt: activeRoom?.createdAt?.toISOString() ?? null,
@@ -86,6 +94,12 @@ export async function POST(req) {
   const currentConfig = await prisma.streamConfig.findFirst();
   const previousConfig = normalizeConfig(currentConfig);
   const data = buildConfigData(body, currentConfig);
+  if (sharedBroadcastMode) {
+    await withSharedStreamUrls(previousConfig);
+    data.baseUrls = previousConfig.baseUrls;
+    data.defaultUrl = previousConfig.defaultUrl;
+    data.fallbackUrl = previousConfig.fallbackUrl;
+  }
 
   const config = currentConfig
     ? await prisma.streamConfig.update({
@@ -111,7 +125,7 @@ export async function POST(req) {
   }
 
   return NextResponse.json({
-    ...normalized,
+    ...await withSharedStreamUrls(normalized),
     roomId: room?.id ?? null,
     broadcastId: room?.broadcastId ?? null,
     broadcastStartedAt: room?.createdAt?.toISOString() ?? null,

@@ -46,8 +46,8 @@ export async function GET(req, { params }) {
     const headers = new Headers();
     headers.set("Content-Type", s3Response.ContentType || "application/octet-stream");
     headers.set("Content-Length", s3Response.ContentLength?.toString() || '0');
-    // Cache control untuk performa
-    headers.set("Cache-Control", "public, max-age=31536000, immutable");
+    // no-store: mencegah cache poisoning di CDN edge
+    headers.set("Cache-Control", "private, no-store");
     headers.set("Accept-Ranges", "bytes");
 
     return new NextResponse(body, {

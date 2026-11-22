@@ -19,13 +19,13 @@ const BoardSliderAnnouncer = dynamic(
 
 function AnnouncersSection() {
   return (
-    <section className="py-24 bg-gradient-to-b from-orange-400 via-orange-300 to-yellow-200 text-gray-800">
+    <section className="py-24 bg-gradient-to-b from-orange-400 via-yellow-200 to-white text-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center sm:text-left max-w-2xl mb-12">
-          <h2 className="font-accent text-5xl sm:text-7xl text-white font-bold mb-4">
+          <h2 className="font-accent text-5xl sm:text-7xl text-gray-900 font-bold mb-4">
             Our Announcers
           </h2>
-          <p className="font-body text-lg text-white/90">
+          <p className="font-body text-lg text-gray-800">
             Temui Announcer kami yang penuh talenta dan cerita!
           </p>
         </div>
