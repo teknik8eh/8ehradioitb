@@ -6,13 +6,15 @@ import {
   clearNowPlayingState,
 } from "@/lib/now-playing-state";
 import { authenticateDevice, checkMetadataOwnership } from "@/lib/studio-devices";
+import { findItunesArtwork } from "@/lib/itunes-artwork";
+import { chooseStudioCover } from "@/lib/studio-artwork";
 
 // POST /api/studio/now-playing
 // Endpoint untuk app 8EH Studio — auth via X-Device-Token:
 //   1) token per-device (StudioDevice.token, hasil login) → cek scope + kepemilikan
 //   2) token global lama (STUDIO_DEVICE_TOKEN) → kompatibilitas dev/test
 //
-// Body: { mode: "auto"|"program"|"clear"|"heartbeat", title, artist?, playbackState? }
+// Body: { mode: "auto"|"program"|"clear"|"heartbeat", title, artist?, playbackState?, artwork?: { mimeType, data } }
 //
 // Ownership berlapis:
 //   a. control="manual" (dashboard lock) → agent ditolak 409
@@ -165,13 +167,24 @@ export async function POST(req) {
           { status: 200 },
         );
       }
+      const artist = cleanText(body?.artist);
+      const coverImage = await chooseStudioCover(body?.artwork, title, artist, {
+        lookup: findItunesArtwork,
+      });
+      // Dashboard may have taken manual control while the iTunes request ran.
+      if (await isDashboardLockActive()) {
+        return NextResponse.json(
+          { error: "Dashboard has manual control" },
+          { status: 409 },
+        );
+      }
       await upsertNowPlayingState({
         source: "studio-agent",
         playlistId: null,
         itemId: null,
         title,
-        artist: cleanText(body?.artist),
-        coverImage: null,
+        artist,
+        coverImage,
         isActive: true,
         startedAt: new Date(),
         updatedBy: "companion-agent",
