@@ -9,6 +9,8 @@ import ChatInputBox from "@/app/components/chat/ChatInputBox";
 import RequestLaguModal from "@/app/components/RequestLaguModal";
 import { useLiveChat } from "@/app/hooks/useLiveChat";
 import { subscribePusherChannel, unsubscribePusherChannel } from "@/app/hooks/usePusherClient";
+import { useStreamConfig } from "@/app/hooks/useStreamConfig";
+import { watchNowPlaying } from "@/lib/now-playing-client";
 
 
 // Form nama inline untuk chat panel di player (harus komponen terpisah agar hooks bisa dipakai)
@@ -124,6 +126,9 @@ function RunningTitle({ text }) {
 }
 
 const GlobalAudioPlayer = () => {
+  const pathname = usePathname();
+  const isDashboard = Boolean(pathname?.startsWith("/dashboard"));
+  const { data: streamConfig } = useStreamConfig();
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
   const [showPlayer, setShowPlayer] = useState(false);
@@ -145,6 +150,14 @@ const GlobalAudioPlayer = () => {
   // isPlaying/volume — level audio user tidak diganggu.
   const onAirRef = useRef(false);
 
+  const endLiveChat = useCallback(() => {
+    clearStoredChatSession();
+    setGuestName(null);
+    setRoomId(null);
+    setChatRoomId(null);
+    setIsLiveActive(false);
+  }, []);
+
   useEffect(() => {
     showLiveChatRef.current = showLiveChat;
   }, [showLiveChat]);
@@ -158,7 +171,8 @@ const GlobalAudioPlayer = () => {
 
     const handleLiveStarted = (data) => {
       if (!data.roomId) return;
-      window.dispatchEvent(new CustomEvent("onAirChanged", { detail: { onAir: true, ...data } }));
+      onAirRef.current = true;
+      setShowPlayer(true);
       setRoomId(data.roomId);
       setFeatures({
         liveChatEnabled: data.liveChatEnabled !== false,
@@ -168,16 +182,12 @@ const GlobalAudioPlayer = () => {
     };
 
     const handleLiveEnded = (data) => {
-      window.dispatchEvent(new CustomEvent("onAirChanged", { detail: { onAir: false, ...data } }));
+      onAirRef.current = false;
       setFeatures({
         liveChatEnabled: data?.liveChatEnabled !== false,
         songRequestEnabled: data?.songRequestEnabled !== false,
       });
-      clearStoredChatSession();
-      setGuestName(null);
-      setRoomId(null);
-      setChatRoomId(null);
-      setIsLiveActive(false);
+      endLiveChat();
     };
 
     channel.bind('live-started', handleLiveStarted);
@@ -188,7 +198,7 @@ const GlobalAudioPlayer = () => {
       channel.unbind('live-ended', handleLiveEnded);
       unsubscribePusherChannel('live-status');
     };
-  }, [realtimeEnabled]);
+  }, [endLiveChat, realtimeEnabled]);
 
   useEffect(() => {
     if (!features.liveChatEnabled) {
@@ -269,91 +279,26 @@ const GlobalAudioPlayer = () => {
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-
-    const fetchNowPlaying = () => {
-      fetch("/api/now-playing", { cache: "no-store" })
-        .then((res) => {
-          const ct = res.headers.get("content-type") || "";
-          if (!res.ok || !ct.includes("application/json")) return null;
-          return res.json();
-        })
-        .then((data) => {
-          if (data && !cancelled) applyNowPlaying(data);
-        })
-        .catch(() => {
-          if (cancelled) return;
-          fetch("/api/player-config")
-            .then((res) => {
-              const ct = res.headers.get("content-type") || "";
-              if (!res.ok || !ct.includes("application/json")) return null;
-              return res.json();
-            })
-            .then((data) => {
-              if (data && !cancelled) applyNowPlaying(data);
-            })
-            .catch(() => {
-              if (!cancelled) {
-                setPlayerConfig({ title: "", subtitle: "", coverImage: "" });
-              }
-            });
-        });
-    };
-
-    fetchNowPlaying();
-    const intervalId = window.setInterval(fetchNowPlaying, 60000);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(intervalId);
-    };
-  }, [applyNowPlaying]);
-
-  useEffect(() => {
-    // Now Playing harus realtime sejak mount — target agent <5 detik.
-    // subscribePusherChannel sudah mengatur lazy connect + authEndpoint.
+    if (isDashboard) return;
     const subscription = subscribePusherChannel("now-playing");
-    if (!subscription) return;
-    const { channel } = subscription;
-
-    channel.bind("updated", applyNowPlaying);
-
+    const stopWatching = watchNowPlaying(subscription, applyNowPlaying);
     return () => {
-      channel.unbind("updated", applyNowPlaying);
-      unsubscribePusherChannel("now-playing");
+      stopWatching();
+      if (subscription) unsubscribePusherChannel("now-playing");
     };
-  }, [applyNowPlaying]);
+  }, [applyNowPlaying, isDashboard]);
 
   useEffect(() => {
-    fetch("/api/stream-config")
-      .then((res) => res.json())
-      .then((data) => {
-        setFeatures({
-          liveChatEnabled: data?.liveChatEnabled !== false,
-          songRequestEnabled: data?.songRequestEnabled !== false,
-        });
-        // ponytail: fetch ini cuma sekali di mount — kalau status on-air berubah
-        // sebelum user memicu realtimeEnabled, event onAirChanged belum langganan
-        // dan player tidak akan muncul. Ceiling: subscribe channel 'live-status'
-        // tanpa syarat, atau polling, kalau itu jadi masalah nyata.
-        onAirRef.current = data?.onAir === true;
-        if (onAirRef.current) setShowPlayer(true);
-      })
-      .catch(() => {});
-  }, []);
-
-  // ponytail: live-started/live-ended lewat event onAirChanged juga memunculkan
-  // player. off-air sengaja TIDAK auto-hide (tidak diminta) — hide tetap lewat
-  // jalur yang sudah ada (pause podcast). Upgrade: setShowPlayer(false) di
-  // else-branch jika suatu saat auto-hide saat off-air diinginkan.
-  useEffect(() => {
-    const handler = (e) => {
-      onAirRef.current = Boolean(e.detail?.onAir);
-      if (onAirRef.current) setShowPlayer(true);
-    };
-    window.addEventListener("onAirChanged", handler);
-    return () => window.removeEventListener("onAirChanged", handler);
-  }, []);
+    if (!streamConfig) return;
+    setFeatures({
+      liveChatEnabled: streamConfig.liveChatEnabled !== false,
+      songRequestEnabled: streamConfig.songRequestEnabled !== false,
+    });
+    const onAir = streamConfig.onAir === true;
+    if (onAirRef.current && !onAir) endLiveChat();
+    onAirRef.current = onAir;
+    if (onAir) setShowPlayer(true);
+  }, [endLiveChat, streamConfig]);
 
  useEffect(() => {
   let externalPause = false;
@@ -522,11 +467,7 @@ const GlobalAudioPlayer = () => {
     sendMessage(text, guestName);
   };
 
-  // ponytail: hide di dashboard — audio keep playing (tidak diminta stop),
-  // player UI saja yang hilang. usePathname reaktif di kedua arah navigasi.
-  const pathname = usePathname();
-  const isDashboard = Boolean(pathname?.startsWith("/dashboard"));
-
+  // Player tetap terpasang agar audio berlanjut saat navigasi ke dashboard.
   const isVisible = showPlayer && !isDashboard;
 
   return (
@@ -541,14 +482,14 @@ const GlobalAudioPlayer = () => {
                   <div>
                     <p className="font-bold text-gray-900 text-sm leading-tight">Live Chat</p>
                   </div>
-                  <span
+                  {/* <span
                     className="ml-1 text-[10px] font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded-xl flex items-center gap-1"
                     title={`${activeListeners} peserta chat`}
                     aria-label={`${activeListeners} peserta chat`}
                   >
                     <FiMessageCircle className="text-green-500" size={12} aria-hidden="true" />
                     {activeListeners}
-                  </span>
+                  </span> */}
                 </div>
                 
                 <div className="flex items-center gap-2">
