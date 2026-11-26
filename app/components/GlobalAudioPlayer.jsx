@@ -541,14 +541,14 @@ const GlobalAudioPlayer = () => {
                   <div>
                     <p className="font-bold text-gray-900 text-sm leading-tight">Live Chat</p>
                   </div>
-                  <span
+                  {/* <span
                     className="ml-1 text-[10px] font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded-xl flex items-center gap-1"
                     title={`${activeListeners} peserta chat`}
                     aria-label={`${activeListeners} peserta chat`}
                   >
                     <FiMessageCircle className="text-green-500" size={12} aria-hidden="true" />
                     {activeListeners}
-                  </span>
+                  </span> */}
                 </div>
                 
                 <div className="flex items-center gap-2">
