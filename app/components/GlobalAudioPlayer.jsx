@@ -3,11 +3,13 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { FiMessageCircle, FiMusic } from "react-icons/fi";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
+import TurnstileChallenge from "@/app/components/TurnstileChallenge";
 
 import LiveChatWindow from "@/app/components/chat/LiveChatWindow";
 import ChatInputBox from "@/app/components/chat/ChatInputBox";
 import RequestLaguModal from "@/app/components/RequestLaguModal";
 import { useLiveChat } from "@/app/hooks/useLiveChat";
+import { usePlayerChatTitle } from "@/app/hooks/usePlayerChatTitle";
 import { subscribePusherChannel, unsubscribePusherChannel } from "@/app/hooks/usePusherClient";
 
 
@@ -15,6 +17,8 @@ import { subscribePusherChannel, unsubscribePusherChannel } from "@/app/hooks/us
 function InlineNameForm({ onSubmit }) {
   const [submitting, setSubmitting] = React.useState(false);
   const [formErr, setFormErr] = React.useState('');
+  const [turnstileToken, setTurnstileToken] = React.useState('');
+  const [challengeReset, setChallengeReset] = React.useState(0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,10 +27,17 @@ function InlineNameForm({ onSubmit }) {
       setFormErr('Nama minimal 2, maksimal 30 karakter');
       return;
     }
+    if (!turnstileToken) {
+      setFormErr('Selesaikan verifikasi keamanan terlebih dahulu.');
+      return;
+    }
     setSubmitting(true);
     setFormErr('');
-    const result = await onSubmit(val);
-    if (result?.error) setFormErr(result.error);
+    const result = await onSubmit(val, turnstileToken);
+    if (result?.error) {
+      setFormErr(result.error);
+      setChallengeReset((n) => n + 1);
+    }
     setSubmitting(false);
   };
 
@@ -34,7 +45,7 @@ function InlineNameForm({ onSubmit }) {
     <div className="font-plus-jakarta-sans flex-1 flex flex-col items-center justify-center bg-gray-50 px-6 py-8">
       <p className="mb-1 font-bold text-gray-900 text-base text-center">Live Chat</p>
       <p className="mb-5 max-w-[250px] text-center text-xs leading-relaxed text-gray-500">Gunakan nama panggilan agar penyiar dan pendengar lain bisa mengenalmu.</p>
-      <form className="w-full max-w-[280px] flex flex-col gap-2" onSubmit={handleSubmit}>
+      <form className="w-full max-w-[300px] flex flex-col gap-2" onSubmit={handleSubmit}>
         <input
           name="nickname"
           type="text"
@@ -44,10 +55,11 @@ function InlineNameForm({ onSubmit }) {
           autoFocus
           disabled={submitting}
         />
+        <TurnstileChallenge onTokenChange={setTurnstileToken} resetKey={challengeReset} />
         {formErr && <p className="rounded-lg bg-[#D83232]/10 px-3 py-2 text-xs text-[#D83232]">{formErr}</p>}
         <ButtonPrimary
           type="submit"
-          disabled={submitting}
+          disabled={submitting || !turnstileToken}
           className="!w-full !rounded-lg !px-4 !py-3 !font-plus-jakarta-sans text-sm disabled:opacity-50"
         >
           {submitting ? 'Menghubungkan...' : 'Masuk ke Chat'}
@@ -130,6 +142,7 @@ const GlobalAudioPlayer = () => {
   const [error, setError] = useState("");
   const [isMuted, setIsMuted] = useState(false);
   const [showLiveChat, setShowLiveChat] = useState(false);
+  const chatTitle = usePlayerChatTitle(showLiveChat);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [features, setFeatures] = useState({
     liveChatEnabled: true,
@@ -493,12 +506,12 @@ const GlobalAudioPlayer = () => {
     setShowLiveChat((prev) => !prev);
   };
 
-  const handleNameSubmit = async (name) => {
+  const handleNameSubmit = async (name, turnstileToken) => {
     try {
       const res = await fetch('/api/live-chat/guest-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nickname: name }),
+        body: JSON.stringify({ nickname: name, turnstileToken }),
       });
       const ct = res.headers.get('content-type') || '';
       if (!res.ok) {
@@ -534,13 +547,14 @@ const GlobalAudioPlayer = () => {
       {isVisible && (
         <div className="fixed bottom-0 left-0 right-0 z-50">
           {showLiveChat && (
-            <div className="font-plus-jakarta-sans absolute bottom-full right-2 left-2 md:left-auto md:right-60 mb-3 md:w-[340px] h-[min(68vh,540px)] md:h-[480px] max-h-[560px] bg-white border border-gray-200 rounded-2xl shadow-2xl shadow-gray-900/20 flex flex-col overflow-hidden">
-              <div className="relative flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white flex-shrink-0">
+            <div className="font-plus-jakarta-sans absolute bottom-full right-2 left-2 md:left-auto md:right-60 mb-3 md:w-[380px] h-[min(68vh,540px)] md:h-[480px] max-h-[560px] bg-white border border-gray-200 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+              <div className="relative flex items-center justify-between gap-3 px-4 py-3 border-b border-gray-100 bg-white flex-shrink-0">
                 
-                <div className="flex items-center gap-2">
-                  <div>
-                    <p className="font-bold text-gray-900 text-sm leading-tight">Live Chat</p>
-                  </div>
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#D83232]/10 text-[#D83232]">
+                    <FiMessageCircle size={18} aria-hidden="true" />
+                  </span>
+                  <p className="truncate font-heading font-bold text-gray-900 text-sm leading-tight" title={chatTitle}>{chatTitle}</p>
                   <span
                     className="ml-1 text-[10px] font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded-xl flex items-center gap-1"
                     title={`${activeListeners} peserta chat`}
@@ -554,7 +568,7 @@ const GlobalAudioPlayer = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={toggleLiveChat}
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D83232]/40 transition-colors"
                     aria-label="Tutup live chat"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
@@ -637,7 +651,7 @@ const GlobalAudioPlayer = () => {
                   </button>
                 )}
                 {features.liveChatEnabled && (
-                  <button type="button" onClick={toggleLiveChat} className={`md:hidden w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${showLiveChat ? "bg-gray-900 text-white" : "ring-1 ring-gray-300 hover:ring-gray-900 text-gray-700"}`} aria-label="Buka live chat" title="Live chat">
+                  <button type="button" onClick={toggleLiveChat} className={`md:hidden w-9 h-9 rounded-full ring-1 flex items-center justify-center transition-all flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D83232] ${showLiveChat ? "bg-[#D83232]/10 ring-[#D83232] text-[#D83232]" : "ring-gray-300 hover:ring-[#D83232] text-gray-700 hover:text-[#D83232]"}`} aria-label="Buka live chat" aria-expanded={showLiveChat} title="Live chat">
                     <FiMessageCircle size={18} />
                   </button>
                 )}
@@ -687,7 +701,7 @@ const GlobalAudioPlayer = () => {
                   </button>
                 )}
                 {features.liveChatEnabled && (
-                  <button type="button" onClick={toggleLiveChat} className={`w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${showLiveChat ? "bg-gray-900 text-white" : "ring-1 ring-gray-300 hover:ring-gray-900 text-gray-700"}`} aria-label="Buka live chat" title="Live chat">
+                  <button type="button" onClick={toggleLiveChat} className={`w-9 h-9 rounded-full ring-1 flex items-center justify-center transition-all flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D83232] ${showLiveChat ? "bg-[#D83232]/10 ring-[#D83232] text-[#D83232]" : "ring-gray-300 hover:ring-[#D83232] text-gray-700 hover:text-[#D83232]"}`} aria-label="Buka live chat" aria-expanded={showLiveChat} title="Live chat">
                     <FiMessageCircle size={18} />
                   </button>
                 )}

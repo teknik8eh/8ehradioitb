@@ -6,9 +6,11 @@ import { useLiveChat } from '../hooks/useLiveChat';
 import GuestNameModal from '../components/chat/GuestNameModal';
 import LiveChatWindow from '../components/chat/LiveChatWindow';
 import ChatInputBox from '../components/chat/ChatInputBox';
+import { usePlayerChatTitle } from '../hooks/usePlayerChatTitle';
 import { subscribePusherChannel, unsubscribePusherChannel } from '../hooks/usePusherClient';
 
 export default function LiveChatPage() {
+  const chatTitle = usePlayerChatTitle();
   const [roomId, setRoomId] = useState<string | null>(null);
   const [isLive, setIsLive] = useState<boolean | null>(null); // null = loading, false = not live, true = live
   const [liveChatEnabled, setLiveChatEnabled] = useState(true);
@@ -118,10 +120,10 @@ export default function LiveChatPage() {
       
       {/* HEADER */}
       <header className="flex items-center justify-between border-b border-gray-100 px-5 py-4 bg-white z-10">
-        <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-base font-bold flex items-center gap-2 text-gray-900">
-              Live Chat
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="min-w-0">
+            <h1 className="truncate text-base font-bold text-gray-900" title={chatTitle}>
+              {chatTitle}
             </h1>
             <p
               className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.5"

@@ -5,6 +5,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { hasAnyRole } from "@/lib/roleUtils";
 import { requireGuestSession } from "@/lib/live-chat/auth";
 import { getOrSyncActiveRoom } from "@/lib/live-chat/room";
+import { getSongRequestCount } from "@/lib/song-request-quota";
 
 const REQUEST_LIMIT = parseInt(process.env.SONG_REQUEST_LIMIT_PER_SESSION || "3");
 const SONG_REQUEST_ADMIN_ROLES = ["MUSIC", "DEVELOPER", "TECHNIC"];
@@ -58,7 +59,8 @@ export async function POST(req) {
       );
     }
 
-    if (guestSession.requestCount >= REQUEST_LIMIT) {
+    const requestCount = await getSongRequestCount(guestSession.id, room.broadcastId);
+    if (requestCount >= REQUEST_LIMIT) {
       return NextResponse.json(
         { error: "Kamu sudah mencapai batas request untuk siaran ini." },
         { status: 429 }
@@ -112,11 +114,6 @@ export async function POST(req) {
         broadcastId: room.broadcastId,
         status: "PENDING",
       },
-    });
-
-    await prisma.guestSession.update({
-      where: { id: guestSession.id },
-      data: { requestCount: { increment: 1 } },
     });
 
     return NextResponse.json({ success: true, request: songRequest });

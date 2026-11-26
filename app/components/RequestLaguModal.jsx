@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
+import TurnstileChallenge from "@/app/components/TurnstileChallenge";
 
 export default function RequestLaguModal({ isOpen, onClose }) {
   const [onAir, setOnAir] = useState(false);
@@ -29,10 +30,13 @@ export default function RequestLaguModal({ isOpen, onClose }) {
   const [guestNameInput, setGuestNameInput] = useState("");
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [sessionError, setSessionError] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [challengeReset, setChallengeReset] = useState(0);
 
   // Cek guest session saat modal dibuka
   useEffect(() => {
     if (!isOpen) return;
+    setTurnstileToken("");
     const checkSession = async () => {
       setIsCheckingSession(true);
       try {
@@ -61,17 +65,22 @@ export default function RequestLaguModal({ isOpen, onClose }) {
       setSessionError("Nama panggilan minimal 2 karakter.");
       return;
     }
+    if (!turnstileToken) {
+      setSessionError("Selesaikan verifikasi keamanan terlebih dahulu.");
+      return;
+    }
     setIsCreatingSession(true);
     setSessionError("");
     try {
       const res = await fetch("/api/live-chat/guest-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nickname: guestNameInput.trim() }),
+        body: JSON.stringify({ nickname: guestNameInput.trim(), turnstileToken }),
       });
       const data = await res.json();
       if (!res.ok) {
         setSessionError(data.error || "Gagal membuat session. Coba lagi.");
+        setChallengeReset((n) => n + 1);
         return;
       }
       setHasSession(true);
@@ -81,6 +90,7 @@ export default function RequestLaguModal({ isOpen, onClose }) {
       window.dispatchEvent(new CustomEvent("guestSessionChanged", { detail: data }));
     } catch {
       setSessionError("Terjadi kesalahan jaringan. Coba lagi.");
+      setChallengeReset((n) => n + 1);
     } finally {
       setIsCreatingSession(false);
     }
@@ -372,13 +382,15 @@ export default function RequestLaguModal({ isOpen, onClose }) {
             className="w-full border-2 border-gray-200 focus:border-[#D83232] focus:ring-2 focus:ring-[#D83232]/10 rounded-xl px-4 py-2.5 text-sm outline-none transition-colors"
           />
 
+          <TurnstileChallenge onTokenChange={setTurnstileToken} resetKey={challengeReset} />
+
           {sessionError && (
             <p className="text-sm text-[#D83232] mt-2">{sessionError}</p>
           )}
 
           <ButtonPrimary
             onClick={handleCreateSession}
-            disabled={isCreatingSession || guestNameInput.trim().length < 2}
+            disabled={isCreatingSession || guestNameInput.trim().length < 2 || !turnstileToken}
             className="!w-full !mt-4 !py-3 !rounded-xl !font-plus-jakarta-sans text-sm disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
           >
             {isCreatingSession ? "Memulai..." : "Mulai"}

@@ -1,7 +1,25 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { ChatMessage } from '../../hooks/useLiveChat';
+
+function getInitials(name: string) {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  return (words.length > 1 ? words[0][0] + words[1][0] : words[0]?.slice(0, 2) || '?')
+    .toLocaleUpperCase('id-ID');
+}
+
+function getMessageTime(timestamp: Date) {
+  const date = new Date(timestamp);
+  return Number.isNaN(date.getTime())
+    ? ''
+    : `${new Intl.DateTimeFormat('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23',
+      }).format(date).replace('.', ':')} WIB`;
+}
 
 interface LiveChatWindowProps {
   messages: ChatMessage[];
@@ -21,50 +39,16 @@ export default function LiveChatWindow({
   onReconnect
 }: LiveChatWindowProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
-  const [, setTick] = useState(0);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  useEffect(() => {
-    // Re-render relative time every 30 seconds
-    const interval = setInterval(() => setTick(t => t + 1), 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const getRelativeTime = (dateInput: Date) => {
-    try {
-      const date = new Date(dateInput);
-      const now = new Date();
-      const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-      if (diffInSeconds < 5) return "Baru saja";
-      if (diffInSeconds < 60) return `${diffInSeconds} detik lalu`;
-
-      const diffInMinutes = Math.floor(diffInSeconds / 60);
-      if (diffInMinutes < 60) return `${diffInMinutes} menit lalu`;
-
-      const diffInHours = Math.floor(diffInMinutes / 60);
-      if (diffInHours < 24) return `${diffInHours} jam lalu`;
-
-      const diffInDays = Math.floor(diffInHours / 24);
-      if (diffInDays < 30) return `${diffInDays} hari lalu`;
-
-      return date.toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "short",
-        year: "numeric"
-      });
-    } catch {
-      return "Baru saja";
-    }
-  };
-
   const getAbsoluteTime = (dateInput: Date) => {
     try {
       const date = new Date(dateInput);
       return date.toLocaleString("id-ID", {
+        timeZone: 'Asia/Jakarta',
         weekday: "long",
         year: "numeric",
         month: "long",
@@ -87,7 +71,7 @@ export default function LiveChatWindow({
   };
 
   return (
-    <div className="font-plus-jakarta-sans flex-1 overflow-y-auto bg-gray-50 p-4 space-y-3 flex flex-col">
+    <div className="font-plus-jakarta-sans flex-1 overflow-y-auto bg-gray-50 p-4 space-y-4 flex flex-col">
       {connectionError && (
         <div className="bg-[#D83232]/10 text-[#B72929] border border-[#D83232]/20 rounded-lg p-3 text-xs flex items-center justify-between gap-2 shadow-sm animate-in fade-in duration-200 mb-2">
           <div className="flex items-center gap-1.5">
@@ -121,7 +105,7 @@ export default function LiveChatWindow({
         return (
           <div
             key={msg.id}
-            className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} group`}
+            className={`flex min-w-0 items-start gap-2.5 ${isOwnMessage ? 'justify-end' : 'justify-start'} group`}
           >
             {isAdmin && !isOwnMessage && !msg.deleted && (
               <button 
@@ -139,34 +123,42 @@ export default function LiveChatWindow({
               </button>
             )}
 
-            <div
-              className={`max-w-[85%] md:max-w-[75%] rounded-2xl px-4 py-2 ${
-                isOwnMessage
-                  ? 'bg-[#D83232] text-white rounded-br-none shadow-sm'
-                  : 'bg-white text-gray-800 rounded-bl-none shadow-sm ring-1 ring-gray-100'
-              }`}
-            >
-              <p className={`mb-1 text-[10px] font-bold tracking-wide ${isOwnMessage ? 'text-white/75' : 'text-[#D83232]'}`}>
+            {!isOwnMessage && (
+              <div aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#D83232]/10 text-[11px] font-bold text-[#B72929]">
+                {getInitials(msg.senderName)}
+              </div>
+            )}
+
+            <div className={`flex min-w-0 max-w-[calc(100%_-_2.875rem)] flex-col items-start ${isOwnMessage ? 'items-end' : ''}`}>
+              <p className={`mb-1 max-w-full truncate text-sm font-semibold text-gray-900 ${isOwnMessage ? 'text-right' : ''}`} title={msg.senderName}>
                 {msg.senderName}
               </p>
-              
-              {msg.deleted ? (
-                <p className={`text-sm leading-relaxed italic ${isOwnMessage ? 'text-white/60' : 'text-gray-400'}`}>
-                  Pesan ini dihapus oleh moderator
+              <div className={`max-w-full rounded-2xl px-3.5 py-2 shadow-sm ${
+                isOwnMessage
+                  ? 'rounded-tr-md bg-[#D83232] text-white'
+                  : 'rounded-tl-md bg-white text-gray-800 ring-1 ring-gray-100'
+              }`}>
+                {msg.deleted ? (
+                  <p className={`text-sm leading-relaxed italic ${isOwnMessage ? 'text-white/70' : 'text-gray-400'}`}>
+                    Pesan ini dihapus oleh moderator
+                  </p>
+                ) : (
+                  <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.text}</p>
+                )}
+                <p
+                  className={`mt-0.5 text-right text-[10px] leading-tight ${isOwnMessage ? 'text-white/70' : 'text-gray-400'}`}
+                  title={getAbsoluteTime(msg.timestamp)}
+                >
+                  {getMessageTime(msg.timestamp)}
                 </p>
-              ) : (
-                <p className="text-sm leading-relaxed break-words">{msg.text}</p>
-              )}
-              
-              <p 
-                className={`text-[8px] mt-1 text-right cursor-help ${
-                  isOwnMessage ? 'text-white/60' : 'text-gray-400'
-                }`}
-                title={getAbsoluteTime(msg.timestamp)}
-              >
-                {getRelativeTime(msg.timestamp)}
-              </p>
+              </div>
             </div>
+
+            {isOwnMessage && (
+              <div aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#D83232]/10 text-[11px] font-bold text-[#B72929]">
+                {getInitials(msg.senderName)}
+              </div>
+            )}
 
             {isAdmin && isOwnMessage && !msg.deleted && (
               <button 

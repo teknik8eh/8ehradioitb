@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import ButtonPrimary from '../ButtonPrimary';
+import TurnstileChallenge from '../TurnstileChallenge';
 
 interface GuestNameModalProps {
   onSaveName: (name: string) => void;
@@ -12,6 +13,8 @@ export default function GuestNameModal(props: GuestNameModalProps) {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [challengeReset, setChallengeReset] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +29,10 @@ export default function GuestNameModal(props: GuestNameModalProps) {
       setError('Nama panggilan minimal 2 dan maksimal 30 karakter');
       return;
     }
+    if (!turnstileToken) {
+      setError('Selesaikan verifikasi keamanan terlebih dahulu.');
+      return;
+    }
 
     setLoading(true);
     setError('');
@@ -36,12 +43,13 @@ export default function GuestNameModal(props: GuestNameModalProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ nickname: trimmedName }),
+        body: JSON.stringify({ nickname: trimmedName, turnstileToken }),
       });
 
       if (!response.ok) {
         const data = await response.json();
         setError(data.error || 'Gagal masuk ke chat');
+        setChallengeReset((n) => n + 1);
         return;
       }
 
@@ -54,6 +62,7 @@ export default function GuestNameModal(props: GuestNameModalProps) {
       onSaveName(trimmedName);
     } catch (err) {
       setError('Terjadi kesalahan koneksi ke server');
+      setChallengeReset((n) => n + 1);
       console.error(err);
     } finally {
       setLoading(false);
@@ -87,13 +96,15 @@ export default function GuestNameModal(props: GuestNameModalProps) {
               disabled={loading}
             />
 
+            <TurnstileChallenge onTokenChange={setTurnstileToken} resetKey={challengeReset} />
+
             {error && (
               <p className="mt-2 text-sm text-[#D83232]">{error}</p>
             )}
 
             <ButtonPrimary
               type="submit"
-              disabled={loading}
+              disabled={loading || !turnstileToken}
               className="!mt-4 !w-full !rounded-lg !px-4 !py-3 !font-plus-jakarta-sans disabled:opacity-50"
             >
               {loading ? 'Menghubungkan...' : 'Masuk ke Chat'}

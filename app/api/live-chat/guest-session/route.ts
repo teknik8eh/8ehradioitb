@@ -3,10 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { setGuestSessionCookie, getSessionIdFromCookie } from "@/lib/live-chat/auth";
 import { sanitizeNickname } from "@/lib/live-chat/validate";
 import { getOrSyncActiveRoom } from "@/lib/live-chat/room";
+import { verifyTurnstile } from "@/lib/turnstile";
+import { getSongRequestCount } from "@/lib/song-request-quota";
 
 /**
  * POST /api/live-chat/guest-session
- * Body: { nickname: string }
+ * Body: { nickname: string, turnstileToken: string }
  * Auth: Public
  *
  * Membuat GuestSession baru, simpan sessionId ke cookie iron-session
@@ -46,6 +48,19 @@ export async function POST(req: NextRequest) {
     req.headers.get("x-real-ip") ??
     null;
 
+  const verification = await verifyTurnstile(
+    (body as Record<string, unknown>)?.turnstileToken,
+    ip,
+  );
+  if (!verification.ok) {
+    return NextResponse.json(
+      { error: verification.unavailable
+        ? "Verifikasi sedang bermasalah. Coba lagi nanti."
+        : "Verifikasi gagal atau kedaluwarsa. Coba lagi." },
+      { status: verification.unavailable ? 503 : 400 },
+    );
+  }
+
   // expiresAt dipakai sebagai hard-limit/housekeeping. Validasi utama "apakah
   // siaran masih live" tetap dicek on-the-fly via getOrSyncActiveRoom() di
   // setiap request lain (lihat lib/auth.ts requireGuestSession untuk detail).
@@ -64,6 +79,7 @@ export async function POST(req: NextRequest) {
       ipAddress: ip,
       isMuted: false,
       requestCount: 0,
+      chatMessageCount: 0,
       broadcastId: room?.broadcastId ?? null,
       expiresAt,
     },
@@ -110,6 +126,8 @@ export async function GET() {
     return NextResponse.json({ active: false, requestLimit });
   }
 
+  const requestCount = await getSongRequestCount(session.id, room.broadcastId);
+
   return NextResponse.json({
     active: true,
     sessionId: session.sessionId,
@@ -117,8 +135,8 @@ export async function GET() {
     isMuted: session.isMuted,
     roomId: room.id,
     live: true,
-    requestCount: session.requestCount,
+    requestCount,
     requestLimit,
-    remainingRequests: Math.max(0, requestLimit - session.requestCount),
+    remainingRequests: Math.max(0, requestLimit - requestCount),
   });
 }

@@ -1,17 +1,20 @@
 "use client";
 import { useState, useEffect } from "react";
 import { FiUser, FiX } from "react-icons/fi";
+import TurnstileChallenge from "@/app/components/TurnstileChallenge";
 
 /**
  * Modal input nama panggilan untuk masuk Live Chat.
  * Pola mengikuti AIAssistModal (backdrop blur + escape).
  *
- * @param {{ isOpen: boolean, onClose: () => void, onSubmit: (name: string) => Promise<void> }}
+ * @param {{ isOpen: boolean, onClose: () => void, onSubmit: (name: string, turnstileToken: string) => Promise<void> }}
  */
 export default function GuestNameModal({ isOpen, onClose, onSubmit }) {
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [challengeReset, setChallengeReset] = useState(0);
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -25,6 +28,7 @@ export default function GuestNameModal({ isOpen, onClose, onSubmit }) {
     if (isOpen) {
       setName("");
       setError("");
+      setTurnstileToken("");
     }
   }, [isOpen]);
 
@@ -41,12 +45,17 @@ export default function GuestNameModal({ isOpen, onClose, onSubmit }) {
       setError("Nama panggilan maksimal 30 karakter.");
       return;
     }
+    if (!turnstileToken) {
+      setError("Selesaikan verifikasi keamanan terlebih dahulu.");
+      return;
+    }
     setSubmitting(true);
     setError("");
     try {
-      await onSubmit(trimmed);
+      await onSubmit(trimmed, turnstileToken);
     } catch (err) {
       setError(err?.message || "Gagal masuk. Coba lagi.");
+      setChallengeReset((n) => n + 1);
     } finally {
       setSubmitting(false);
     }
@@ -95,9 +104,10 @@ export default function GuestNameModal({ isOpen, onClose, onSubmit }) {
             placeholder="Nama panggilan..."
             className="w-full border border-gray-300 p-3 rounded-md font-body text-gray-900 bg-white focus:ring-2 focus:ring-[#D83232] focus:border-[#D83232] outline-none"
           />
+          <TurnstileChallenge onTokenChange={setTurnstileToken} resetKey={challengeReset} />
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || !turnstileToken}
             className="w-full mt-4 bg-[#D83232] hover:bg-[#B72929] text-white py-3 rounded-full font-body font-medium transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer"
           >
             {submitting ? "Masuk..." : "Mulai Chat"}
