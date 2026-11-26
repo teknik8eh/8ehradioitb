@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useState, useEffect, useCallback, useRef } from "react";
-import { useOnAirStatus } from "@/app/hooks/useOnAirStatus";
+import { useStreamConfig } from "@/app/hooks/useStreamConfig";
 import { getPusherClient } from "@/app/hooks/usePusherClient";
 import { useLiveChatContext } from "@/app/components/live-chat/LiveChatProvider";
 import SongRequestModal from "./SongRequestModal";
@@ -12,13 +12,14 @@ export const SongRequestContext = createContext(null);
 const REQUEST_LIMIT = parseInt(process.env.NEXT_PUBLIC_SONG_REQUEST_LIMIT || "3", 10) || 3;
 
 export function SongRequestProvider({ children }) {
-  const { isOnAir } = useOnAirStatus();
+  const { data: streamConfig } = useStreamConfig();
+  const isOnAir = streamConfig?.onAir === true;
+  const broadcastId = isOnAir ? streamConfig.broadcastId : null;
   const liveChat = useLiveChatContext();
   const session = liveChat?.session;
 
   const [queue, setQueue] = useState([]);
   const [nowPlaying, setNowPlaying] = useState(null);
-  const [broadcastId, setBroadcastId] = useState(null);
   const [requestCount, setRequestCount] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -29,24 +30,12 @@ export function SongRequestProvider({ children }) {
 
   const remaining = Math.max(0, REQUEST_LIMIT - requestCount);
 
-  // Fetch broadcastId from stream-config
   useEffect(() => {
     if (!isOnAir) {
-      setBroadcastId(null);
       setQueue([]);
       setNowPlaying(null);
       setModalOpen(false);
-      return;
     }
-    (async () => {
-      try {
-        const res = await fetch("/api/stream-config");
-        if (res.ok) {
-          const data = await res.json();
-          setBroadcastId(data.broadcastId || null);
-        }
-      } catch { /* noop */ }
-    })();
   }, [isOnAir]);
 
   // Sync requestCount from session status

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useStreamConfig } from "@/app/hooks/useStreamConfig";
 import NavbarAudio from "./navbar/NavbarAudio";
 import NavbarMobile from "./navbar/NavbarMobile";
 import NavbarDesktop from "./navbar/NavbarDesktop";
@@ -12,9 +13,8 @@ export default function Navbar() {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navbarRef = useRef(null);
-  const [onAir, setOnAir] = useState(false);
-  // eslint-disable-next-line no-unused-vars
-  const [playerTitle, setPlayerTitle] = useState("");
+  const { data: streamConfig } = useStreamConfig();
+  const onAir = streamConfig?.onAir === true;
 
   const handleDropdown = (dropdownName) => {
     setOpenDropdown((prev) => (prev === dropdownName ? null : dropdownName));
@@ -37,20 +37,6 @@ export default function Navbar() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/stream-config")
-      .then((res) => res.json())
-      .then((data) =>
-        setOnAir(typeof data?.onAir === "boolean" ? data.onAir : true),
-      );
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/player-config")
-      .then((res) => res.json())
-      .then((data) => setPlayerTitle(data?.title || ""));
   }, []);
 
   const discoverLinks = (
