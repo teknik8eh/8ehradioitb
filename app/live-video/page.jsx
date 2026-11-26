@@ -1,6 +1,6 @@
 import Navbar from "@/app/components/Navbar";
 import FooterSection from "@/app/components/FooterSection";
-import { getLiveVideoUrl } from "@/lib/live-video";
+import { getLiveVideoFallbackUrl, getLiveVideoUrl } from "@/lib/live-video";
 import LiveVideoPlayer from "./LiveVideoPlayer";
 
 export const metadata = { title: "Tonton Siaran | 8EH Radio ITB" };
@@ -13,7 +13,7 @@ export default function LiveVideoPage() {
         <h1 className="mb-6 font-heading text-3xl font-bold text-gray-950 sm:text-5xl">
           Tonton Siaran
         </h1>
-        <LiveVideoPlayer url={getLiveVideoUrl()} />
+        <LiveVideoPlayer url={getLiveVideoUrl()} fallbackUrl={getLiveVideoFallbackUrl()} />
       </main>
       <FooterSection />
     </div>
