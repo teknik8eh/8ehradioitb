@@ -1,4 +1,5 @@
 import Navbar from "@/app/components/Navbar";
+import Link from "next/link";
 import FooterSection from "@/app/components/FooterSection";
 import dynamic from "next/dynamic";
 import HeroSection from "@/app/components/home/HeroSection";
@@ -7,6 +8,7 @@ import NewsList from "@/app/components/home/NewsList";
 import TuneTracker from "@/app/components/home/TuneTracker";
 import ProgramsSection from "@/app/components/home/ProgramsSection";
 import { prisma } from "@/lib/prisma";
+import { getLiveVideoUrl } from "@/lib/live-video";
 
 const BoardSliderAnnouncer = dynamic(
   () => import("@/app/components/BoardSliderAnnouncer"),
@@ -131,6 +133,13 @@ export default async function Home() {
     <main className="flex flex-col min-h-screen bg-white font-sans">
       <Navbar />
       <HeroSection />
+      {getLiveVideoUrl() && (
+        <div className="mx-auto w-full max-w-7xl px-5 py-6 sm:px-8">
+          <Link href="/live-video" className="inline-flex rounded-lg bg-[#c7272c] px-5 py-3 font-heading font-bold text-white hover:bg-[#ae1e22]">
+            Tonton Siaran
+          </Link>
+        </div>
+      )}
       <PodcastList podcasts={serializedPodcasts} />
       <NewsList newsItems={serializedNews} />
       {/* <ProgramsSection /> */}

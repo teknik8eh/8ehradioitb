@@ -26,6 +26,7 @@
     "clsx": "^2.1.1",
     "critters": "^0.0.23",
     "formidable": "^3.5.4",
+    "hls.js": "^1.7.4",
     "icy": "^2.1.0",
     "iron-session": "^8.0.4",
     "mongodb": "^7.3.0",
