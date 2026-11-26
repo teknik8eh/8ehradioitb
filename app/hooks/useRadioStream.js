@@ -1,8 +1,7 @@
 // app/hooks/useRadioStream.js
 import { useState, useEffect, useCallback, useMemo } from "react";
-import useSWR from "swr";
+import { useStreamConfig } from "./useStreamConfig";
 
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
 const DEFAULT_STREAM_URL =
   "http://stream.8ehradioitb.com/listen/8eh_radio_itb/radio.mp3";
 
@@ -44,16 +43,16 @@ export const useRadioStream = () => {
   const [error, setError] = useState("");
   const [retryCount, setRetryCount] = useState(0);
 
-  const { data: configData } = useSWR("/api/stream-config", fetcher, {
-    refreshInterval: 30000,
-  });
+  const { data: configData } = useStreamConfig();
+  const defaultUrl = configData?.defaultUrl;
+  const fallbackUrl = configData?.fallbackUrl;
 
   const config = useMemo(
     () => ({
-      defaultUrl: normalizeStreamUrl(configData?.defaultUrl),
-      fallbackUrl: normalizeStreamUrl(configData?.fallbackUrl),
+      defaultUrl: normalizeStreamUrl(defaultUrl),
+      fallbackUrl: normalizeStreamUrl(fallbackUrl),
     }),
-    [configData],
+    [defaultUrl, fallbackUrl],
   );
 
   // Configuration for the streaming service
