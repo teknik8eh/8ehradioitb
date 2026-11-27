@@ -6,9 +6,9 @@ import { hasAnyRole } from "@/lib/roleUtils";
 import { requireGuestSession } from "@/lib/live-chat/auth";
 import { getOrSyncActiveRoom } from "@/lib/live-chat/room";
 import { getSongRequestCount } from "@/lib/song-request-quota";
+import { SONG_REQUEST_ADMIN_ROLES } from "@/lib/song-request-admin";
 
 const REQUEST_LIMIT = parseInt(process.env.SONG_REQUEST_LIMIT_PER_SESSION || "3");
-const SONG_REQUEST_ADMIN_ROLES = ["MUSIC", "DEVELOPER", "TECHNIC"];
 
 function isSongRequestAdmin(roleString) {
   return hasAnyRole(roleString, SONG_REQUEST_ADMIN_ROLES);
