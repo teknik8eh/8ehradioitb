@@ -2,10 +2,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import TurnstileChallenge from "@/app/components/TurnstileChallenge";
+import { useStreamConfig } from "@/app/hooks/useStreamConfig";
 
 export default function RequestLaguModal({ isOpen, onClose }) {
-  const [onAir, setOnAir] = useState(false);
-  const [songRequestEnabled, setSongRequestEnabled] = useState(true);
+  const { data: streamConfig } = useStreamConfig();
+  const onAir = streamConfig?.onAir === true;
+  const songRequestEnabled = streamConfig?.songRequestEnabled !== false;
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -95,29 +97,6 @@ export default function RequestLaguModal({ isOpen, onClose }) {
       setIsCreatingSession(false);
     }
   };
-
-  // Cek onAir dari stream-config
-  useEffect(() => {
-    const checkOnAir = async () => {
-      try {
-        const res = await fetch("/api/stream-config");
-        const data = await res.json();
-        setOnAir(!!data.onAir);
-        setSongRequestEnabled(data?.songRequestEnabled !== false);
-      } catch {
-        setOnAir(false);
-      }
-    };
-    checkOnAir();
-
-    // Listen event status live dari player/layout.
-    const handler = (e) => {
-      setOnAir(e.detail.onAir);
-      setSongRequestEnabled(e.detail.songRequestEnabled !== false);
-    };
-    window.addEventListener("onAirChanged", handler);
-    return () => window.removeEventListener("onAirChanged", handler);
-  }, []);
 
   const debounceRef = useRef(null);
   const inputRef = useRef(null);
