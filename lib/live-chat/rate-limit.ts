@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
  * instance berbeda dengan memory terpisah — satu sessionId bisa "lolos" limit
  * dengan kena instance yang masih kosong counternya.
  *
- * STRATEGI: fixed window 60 detik, disimpan di GuestSession.requestCount +
+ * STRATEGI: fixed window 60 detik, disimpan di GuestSession.chatMessageCount +
  * GuestSession.requestWindowStart (field requestWindowStart perlu ditambah ke
  * schema.prisma — lihat SCHEMA_CHANGES.md).
  *
@@ -36,7 +36,7 @@ export async function checkRateLimit(sessionId: string): Promise<RateLimitResult
 
   const session = await prisma.guestSession.findUnique({
     where: { sessionId },
-    select: { requestCount: true, requestWindowStart: true },
+    select: { chatMessageCount: true, requestWindowStart: true },
   });
 
   if (!session) {
@@ -46,31 +46,32 @@ export async function checkRateLimit(sessionId: string): Promise<RateLimitResult
   }
 
   const windowStart = session.requestWindowStart;
-  const windowExpired = !windowStart || now.getTime() - windowStart.getTime() >= WINDOW_MS;
+  const windowExpired = !windowStart || session.chatMessageCount == null ||
+    now.getTime() - windowStart.getTime() >= WINDOW_MS;
 
   if (windowExpired) {
     // Window baru: reset counter ke 1 (request ini sendiri dihitung)
     await prisma.guestSession.update({
       where: { sessionId },
-      data: { requestCount: 1, requestWindowStart: now },
+      data: { chatMessageCount: 1, requestWindowStart: now },
     });
     return { allowed: true, remaining: MAX_MESSAGES_PER_WINDOW - 1, retryAfterMs: 0 };
   }
 
   // Masih dalam window yang sama
-  if (session.requestCount >= MAX_MESSAGES_PER_WINDOW) {
+  if ((session.chatMessageCount ?? 0) >= MAX_MESSAGES_PER_WINDOW) {
     const retryAfterMs = WINDOW_MS - (now.getTime() - windowStart!.getTime());
     return { allowed: false, remaining: 0, retryAfterMs };
   }
 
   await prisma.guestSession.update({
     where: { sessionId },
-    data: { requestCount: { increment: 1 } },
+    data: { chatMessageCount: { increment: 1 } },
   });
 
   return {
     allowed: true,
-    remaining: MAX_MESSAGES_PER_WINDOW - (session.requestCount + 1),
+    remaining: MAX_MESSAGES_PER_WINDOW - ((session.chatMessageCount ?? 0) + 1),
     retryAfterMs: 0,
   };
 }

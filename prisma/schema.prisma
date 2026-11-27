@@ -494,6 +494,7 @@ model GuestSession {
   mutedById          String?   @db.ObjectId // admin yang melakukan mute (audit trail)
   mutedAt            DateTime? // kapan mute terjadi (audit trail)
   requestCount       Int       @default(0)
+  chatMessageCount   Int?      @default(0) // rate limit pesan chat; null pada sesi lama
   requestWindowStart DateTime? // mulai window rate-limit 60 detik (lib/rate-limit.ts)
   broadcastId        String?   @db.ObjectId
   expiresAt          DateTime
