@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { FiMusic, FiSearch, FiClock } from "react-icons/fi";
+import { SONG_REQUEST_STATUS_CHANGED } from "@/lib/song-request-admin";
 
 const STATUS_LABELS = {
   PENDING: "Pending",
@@ -87,14 +88,18 @@ export default function SongRequestsPage() {
   const updateStatus = async (id, status, rejectedReason) => {
     setLoadingId(id);
     try {
-      await fetch(`/api/song-request/${id}/status`, {
+      const res = await fetch(`/api/song-request/${id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status, rejectedReason }),
       });
+      if (!res.ok) throw new Error("Gagal mengubah status.");
+      window.dispatchEvent(new Event(SONG_REQUEST_STATUS_CHANGED));
       await fetchRequests(activeFilter, search);
+      return true;
     } catch {
       alert("Gagal mengubah status. Coba lagi.");
+      return false;
     } finally {
       setLoadingId(null);
     }
@@ -108,8 +113,9 @@ export default function SongRequestsPage() {
   const handleRejectConfirm = async () => {
     if (!rejectReason.trim()) return;
     setIsRejecting(true);
-    await updateStatus(rejectModal.id, "REJECTED", rejectReason.trim());
+    const updated = await updateStatus(rejectModal.id, "REJECTED", rejectReason.trim());
     setIsRejecting(false);
+    if (!updated) return;
     setRejectModal({ open: false, id: null });
     setRejectReason("");
   };

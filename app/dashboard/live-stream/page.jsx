@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   FiAlertTriangle,
@@ -16,6 +16,7 @@ import {
   FiSquare,
 } from "react-icons/fi";
 import { hasAnyRole } from "@/lib/roleUtils";
+import { createDashboardRefresh } from "@/lib/dashboard-refresh";
 
 const ACTIONS = [
   {
@@ -93,6 +94,14 @@ function parseRangeDate(value) {
   if (!value) return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function listenerRangeForHours(hours) {
+  const now = new Date();
+  return {
+    from: toDatetimeLocalValue(new Date(now.getTime() - hours * 60 * 60 * 1000)),
+    to: toDatetimeLocalValue(now),
+  };
 }
 
 function ListenerChart({ data, range }) {
@@ -262,22 +271,20 @@ export default function LiveStreamDashboard() {
   const [confirmAction, setConfirmAction] = useState(null);
   const [confirmText, setConfirmText] = useState("");
   const [showSourcePassword, setShowSourcePassword] = useState(false);
-  const [listenerHistory, setListenerHistory] = useState([]);
-  const [listenerRange, setListenerRange] = useState(() => {
-    const now = new Date();
-    const from = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    return {
-      from: toDatetimeLocalValue(from),
-      to: toDatetimeLocalValue(now),
-    };
-  });
+  const [listenerHistory, setListenerHistory] = useState({ snapshots: [], range: null });
+  const [listenerRange, setListenerRange] = useState(() => listenerRangeForHours(24));
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState("");
+  const activeListenerRange = useRef({ hours: 24 });
+  const historyRequest = useRef(null);
+  const statusRefresh = useRef(null);
+  const statusRevision = useRef(0);
 
-  const canManage =
-    session && hasAnyRole(session.user.role, ["DEVELOPER", "TECHNIC"]);
+  const canManage = hasAnyRole(session?.user?.role, ["DEVELOPER", "TECHNIC"]);
   const config = payload?.config || {};
   const broadcastServer = payload?.broadcastServer || {};
   const isBroadcastServerRunning = broadcastServer?.isRunning !== false;
-  const isLocked = payload?.locked || !isBroadcastServerRunning;
+  const isLocked = Boolean(payload?.locked || !isBroadcastServerRunning);
   const liveSource = config?.liveSource || {};
   const serviceStatus = payload?.status?.services || {};
   const listenerStats = payload?.listeners || {};
@@ -289,12 +296,13 @@ export default function LiveStreamDashboard() {
     [confirmAction],
   );
 
-  const fetchStatus = async ({ silent = false } = {}) => {
-    if (!silent) setLoading(true);
+  const fetchStatus = useCallback(async (signal) => {
+    const revision = statusRevision.current;
     setError("");
     try {
-      const res = await fetch("/api/azuracast/status", { cache: "no-store" });
+      const res = await fetch("/api/azuracast/status", { cache: "no-store", signal });
       const data = await res.json();
+      if (signal.aborted || revision !== statusRevision.current) return;
       if (!res.ok) {
         if (data?.config || data?.broadcastServer) {
           setPayload((prev) => ({
@@ -309,59 +317,83 @@ export default function LiveStreamDashboard() {
       }
       setPayload(data);
     } catch (err) {
-      setError(err.message);
+      if (!signal.aborted && revision === statusRevision.current) setError(err.message);
     } finally {
-      if (!silent) setLoading(false);
+      if (!signal.aborted) setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchListenerHistory = async (range = listenerRange) => {
+  const fetchListenerHistory = useCallback(async (range) => {
+    historyRequest.current?.abort();
+    const controller = new AbortController();
+    historyRequest.current = controller;
+    const { signal } = controller;
+    setHistoryLoading(true);
+    setHistoryError("");
     try {
       const params = new URLSearchParams();
       if (range?.from) params.set("from", new Date(range.from).toISOString());
       if (range?.to) params.set("to", new Date(range.to).toISOString());
-      if (!range?.from && !range?.to) params.set("hours", "24");
+      if (range?.hours) params.set("hours", String(range.hours));
+      else if (!range?.from && !range?.to) params.set("hours", "24");
 
       const res = await fetch(`/api/azuracast/listeners?${params}`, {
         cache: "no-store",
+        signal,
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Failed to fetch listeners.");
-      setListenerHistory(data.snapshots || []);
+      if (signal.aborted) return;
+      if (!res.ok || data.error) throw new Error(data.error || "Failed to fetch listeners.");
+      setListenerHistory({
+        snapshots: data.snapshots || [],
+        range: { from: data.from, to: data.to },
+      });
     } catch (err) {
-      console.warn("Failed to fetch listener history:", err);
+      if (!signal.aborted) setHistoryError(err.message);
+    } finally {
+      if (historyRequest.current === controller) {
+        historyRequest.current = null;
+        if (!signal.aborted) setHistoryLoading(false);
+      }
     }
+  }, []);
+
+  const refreshStatus = () => statusRefresh.current?.refresh();
+
+  const refreshListenerHistory = () => {
+    void fetchListenerHistory(activeListenerRange.current);
   };
 
   const setPresetRange = (hours) => {
-    const now = new Date();
-    const from = new Date(now.getTime() - hours * 60 * 60 * 1000);
-    const nextRange = {
-      from: toDatetimeLocalValue(from),
-      to: toDatetimeLocalValue(now),
-    };
-    setListenerRange(nextRange);
-    fetchListenerHistory(nextRange);
+    activeListenerRange.current = { hours };
+    setListenerRange(listenerRangeForHours(hours));
+    refreshListenerHistory();
+  };
+
+  const applyListenerRange = () => {
+    activeListenerRange.current = listenerRange;
+    refreshListenerHistory();
   };
 
   useEffect(() => {
-    if (canManage) {
-      fetchStatus();
-      fetchListenerHistory();
-    }
-    if (sessionStatus !== "loading" && !canManage) setLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canManage, sessionStatus]);
+    if (!canManage) return;
 
-  // Keep listener stats and the chart fresh while the page is open.
+    setLoading(true);
+    const refresh = createDashboardRefresh(fetchStatus, { polling: false });
+    statusRefresh.current = refresh;
+    refresh.refresh();
+    void fetchListenerHistory(activeListenerRange.current);
+
+    return () => {
+      refresh.dispose();
+      statusRefresh.current = null;
+      historyRequest.current?.abort();
+      historyRequest.current = null;
+    };
+  }, [canManage, fetchListenerHistory, fetchStatus]);
+
   useEffect(() => {
-    if (!canManage || isLocked) return undefined;
-    const id = setInterval(() => {
-      fetchStatus({ silent: true });
-      fetchListenerHistory();
-    }, 60000);
-    return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    statusRefresh.current?.setPollingEnabled(canManage && !isLocked);
   }, [canManage, isLocked]);
 
   const copyValue = async (value) => {
@@ -403,6 +435,7 @@ export default function LiveStreamDashboard() {
         throw new Error(data?.error || "Failed to run action.");
       }
 
+      statusRevision.current += 1;
       setPayload((prev) => ({
         ...prev,
         config: data.config || prev?.config,
@@ -413,8 +446,7 @@ export default function LiveStreamDashboard() {
           "Stream password rotated. Update the encoder with the new password.",
         );
       }
-      fetchStatus({ silent: true });
-      fetchListenerHistory();
+      refreshStatus();
     } catch (err) {
       setSuccess("");
       setError(err.message);
@@ -423,7 +455,7 @@ export default function LiveStreamDashboard() {
     }
   };
 
-  if (sessionStatus === "loading" || loading) {
+  if (sessionStatus === "loading" || (canManage && loading)) {
     return <div className="p-8 text-center font-body">Loading...</div>;
   }
 
@@ -458,7 +490,7 @@ export default function LiveStreamDashboard() {
             </Link>
             <button
               type="button"
-              onClick={() => fetchStatus()}
+              onClick={refreshStatus}
               className="inline-flex items-center justify-center gap-2 rounded-md border border-gray-300 px-4 py-2 font-body font-semibold text-gray-700 hover:bg-gray-50"
             >
               <FiRefreshCw />
@@ -502,7 +534,7 @@ export default function LiveStreamDashboard() {
           </div>
           <button
             type="button"
-            onClick={() => fetchStatus()}
+            onClick={refreshStatus}
             disabled={loading}
             className="inline-flex items-center justify-center gap-2 rounded-md bg-gray-900 px-4 py-2 font-body font-semibold text-white hover:bg-black disabled:opacity-50"
           >
@@ -582,6 +614,14 @@ export default function LiveStreamDashboard() {
                 <p className="font-body text-sm text-gray-500">
                   Default menampilkan 24 jam terakhir.
                 </p>
+                <button
+                  type="button"
+                  onClick={refreshListenerHistory}
+                  disabled={historyLoading}
+                  className="mt-2 rounded-md border border-gray-200 px-3 py-2 font-body text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Refresh grafik
+                </button>
               </div>
               <details className="rounded-md border border-gray-200 bg-gray-50 p-3">
                 <summary className="cursor-pointer font-body text-sm font-bold text-gray-700">
@@ -635,7 +675,7 @@ export default function LiveStreamDashboard() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => fetchListenerHistory(listenerRange)}
+                    onClick={applyListenerRange}
                     className="rounded-md bg-blue-600 px-4 py-2 font-body font-semibold text-white hover:bg-blue-700"
                   >
                     Apply
@@ -643,7 +683,13 @@ export default function LiveStreamDashboard() {
                 </div>
               </details>
             </div>
-            <ListenerChart data={listenerHistory} range={listenerRange} />
+            {historyLoading && (
+              <p role="status" className="mb-2 text-sm text-gray-500">Memuat grafik…</p>
+            )}
+            {historyError && (
+              <p role="alert" className="mb-2 text-sm text-red-600">{historyError}</p>
+            )}
+            <ListenerChart data={listenerHistory.snapshots} range={listenerHistory.range} />
           </Panel>
         </section>
 

@@ -6,11 +6,6 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const slug = pathname.split("/")[1];
 
-  // DEBUG - hapus setelah selesai
-  console.log('pathname:', pathname);
-  console.log('slug:', slug);
-  console.log('isReserved:', isReservedShortLinkSlug(slug));
-
   // --- CORS handling for all API routes ---
   if (pathname.startsWith("/api/")) {
     if (request.method === "OPTIONS") {

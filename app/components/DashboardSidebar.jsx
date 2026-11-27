@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   FiBarChart2,
   FiCheckSquare,
@@ -26,6 +26,7 @@ import {
   FiVideo,
 } from "react-icons/fi";
 import { hasAnyRole } from "@/lib/roleUtils";
+import { SONG_REQUEST_ADMIN_ROLES } from "@/lib/song-request-admin";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: FiHome, section: "Main", roles: ["MUSIC", "DEVELOPER", "TECHNIC", "REPORTER", "KRU"] },
@@ -34,7 +35,7 @@ const navItems = [
   { href: "/dashboard/program-videos", label: "Program Videos", icon: FiVideo, section: "Content", roles: ["DEVELOPER", "TECHNIC"] },
   { href: "/dashboard/links", label: "Links & QR Codes", icon: FiLink, section: "Tools", roles: ["MUSIC", "DEVELOPER", "TECHNIC", "REPORTER", "KRU"] },
   { href: "/dashboard/forms", label: "Forms", icon: FiClipboard, section: "Tools", roles: ["MUSIC", "DEVELOPER", "TECHNIC", "REPORTER", "KRU", "DATA"] },
-  { href: "/dashboard/song-requests", label: "Song Requests", icon: FiMusic, section: "Radio", roles: ["MUSIC", "DEVELOPER", "TECHNIC"], showPendingBadge: true },
+  { href: "/dashboard/song-requests", label: "Song Requests", icon: FiMusic, section: "Radio", roles: SONG_REQUEST_ADMIN_ROLES, showPendingBadge: true },
   { href: "/dashboard/now-playing", label: "Now Playing", icon: FiRadio, section: "Radio", roles: ["MUSIC", "DEVELOPER"] },
   { href: "/dashboard/tune-tracker", label: "Tune Tracker", icon: FiMusic, section: "Radio", roles: ["MUSIC", "DEVELOPER"] },
   { href: "/dashboard/player-config", label: "Player Config", icon: FiBarChart2, section: "Radio", roles: ["DEVELOPER", "TECHNIC"] },
@@ -50,31 +51,10 @@ const navItems = [
 
 const sectionOrder = ["Main", "Content", "Tools", "Radio", "Technic", "Data", "Admin"];
 
-export default function DashboardSidebar() {
+export default function DashboardSidebar({ pendingCount }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [isExpanded, setIsExpanded] = useState(true);
-  const [pendingCount, setPendingCount] = useState(0);
-
-  useEffect(() => {
-    if (!hasAnyRole(session?.user?.role, ["MUSIC", "DEVELOPER", "TECHNIC"])) {
-      return;
-    }
-
-    const fetchPending = async () => {
-      try {
-        const res = await fetch("/api/song-request?status=PENDING");
-        const data = await res.json();
-        setPendingCount(data.requests?.length || 0);
-      } catch {
-        setPendingCount(0);
-      }
-    };
-
-    fetchPending();
-    const interval = setInterval(fetchPending, 30000);
-    return () => clearInterval(interval);
-  }, [session?.user?.role]);
 
   const visibleNavItems = navItems.filter((item) =>
     hasAnyRole(session?.user?.role, item.roles),
