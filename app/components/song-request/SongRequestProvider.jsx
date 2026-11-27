@@ -21,6 +21,7 @@ export function SongRequestProvider({ children }) {
   const [queue, setQueue] = useState([]);
   const [nowPlaying, setNowPlaying] = useState(null);
   const [requestCount, setRequestCount] = useState(0);
+  const [requestLimit, setRequestLimit] = useState(REQUEST_LIMIT);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -28,7 +29,7 @@ export function SongRequestProvider({ children }) {
   const [showNameModal, setShowNameModal] = useState(false);
   const channelRef = useRef(null);
 
-  const remaining = Math.max(0, REQUEST_LIMIT - requestCount);
+  const remaining = Math.max(0, requestLimit - requestCount);
 
   useEffect(() => {
     if (!isOnAir) {
@@ -48,6 +49,7 @@ export function SongRequestProvider({ children }) {
           const data = await res.json();
           if (data.active) {
             setRequestCount(data.session.requestCount || 0);
+            setRequestLimit(data.session.requestLimit || REQUEST_LIMIT);
           }
         }
       } catch { /* noop */ }
@@ -157,11 +159,11 @@ export function SongRequestProvider({ children }) {
 
   // After guest name submit, open song request modal
   const handleNameSubmit = useCallback(
-    async (guestName) => {
+    async (guestName, turnstileToken) => {
       const res = await fetch("/api/live-chat/guest-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ guestName }),
+        body: JSON.stringify({ guestName, turnstileToken }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -180,7 +182,7 @@ export function SongRequestProvider({ children }) {
       value={{
         queue,
         nowPlaying,
-        quota: { remaining, total: REQUEST_LIMIT },
+        quota: { remaining, total: requestLimit },
         isSubmitting,
         error,
         submit,
@@ -209,7 +211,7 @@ export function SongRequestProvider({ children }) {
               }}
               onSubmit={submit}
               remaining={remaining}
-              total={REQUEST_LIMIT}
+              total={requestLimit}
               error={error}
             />
           )}

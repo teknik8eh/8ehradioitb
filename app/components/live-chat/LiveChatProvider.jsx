@@ -70,11 +70,11 @@ export function LiveChatProvider({ children }) {
 
   // ── Submit nama panggilan ──
   const handleNameSubmit = useCallback(
-    async (guestName) => {
+    async (guestName, turnstileToken) => {
       const res = await fetch("/api/live-chat/guest-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ guestName }),
+        body: JSON.stringify({ guestName, turnstileToken }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
